@@ -1,4 +1,4 @@
-# Nicole's CPSC 210 Project: Task 1&2 
+# Nicole's CPSC 210 Project
 ## Budget/Expense Tracker
 
 **What will the application do?** <br>
