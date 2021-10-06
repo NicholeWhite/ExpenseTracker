@@ -13,7 +13,7 @@ management and planning. I would also like to focus the implementation of this
 project to the average college/university student.
 
 
-**Why is this project of interest to you?**   <br>
+**Why is this project of interest to me?**   <br>
 As a university student, being on a budget and managing my finances
 is extremely important for day-to-day life. This project gives me the 
 opportunity to implement something beyond just an Excel spreadsheet and 
