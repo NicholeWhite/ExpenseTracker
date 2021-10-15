@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MonthlyTrackerTest {
     private MonthlyTracker testExpenseList;
     private Expense testExpense;
+    private Expense testExpense2;
     private List<String> testList;
 
 
@@ -45,6 +46,13 @@ class MonthlyTrackerTest {
             testExpenseList.removeExpense(testExpense);
         }
         assertTrue(testExpenseList.isEmpty());
+
+        testExpense = new Expense(100F, "inList");
+        testExpense2 = new Expense(500F, "notInList");
+        testExpenseList.addExpense(testExpense);
+        assertEquals(1,testExpenseList.getSize());
+        testExpenseList.removeExpense(testExpense2);
+        assertEquals(1, testExpenseList.getSize());
     }
 
     @Test
