@@ -22,7 +22,7 @@ will help me and (hopefully) other people to visualize and track their finances.
 ## User Story
 - As a user, I would like to add an expense to the monthly tracker 
 - As a user, I would like to delete an expense from the monthly tracker
-- As a user, I would like to add all the expense values together in the monthly tracker
+- As a user, I would like to add all the expense values together in the monthly tracker 
 - As a user, I would like to view expenses in the monthly tracker
 
 

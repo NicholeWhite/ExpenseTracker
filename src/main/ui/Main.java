@@ -1,7 +1,10 @@
 package ui;
 
+// Main class that will run the MonthlyExpenseApp
 public class Main {
-    public static void main(String[] args) {
 
+    // Runs MonthlyExpenseApp
+    public static void main(String[] args) {
+        new MonthlyExpenseApp();
     }
 }
