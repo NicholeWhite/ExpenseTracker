@@ -5,13 +5,14 @@ import model.MonthlyTracker;
 
 import java.util.Scanner;
 
+// This class references and uses code from the TellerApp
+// https://github.students.cs.ubc.ca/CPSC210/TellerApp
 
-// Note: most code for this part of the application is heavily based on the TellerApp
+// Provides a console based interface for the user to interact with
 public class MonthlyExpenseApp {
     private MonthlyTracker expenseList;
     private Expense expense;
     private Scanner input;
-
 
     // EFFECTS: runs the monthly expense application
     public MonthlyExpenseApp() {
@@ -37,7 +38,6 @@ public class MonthlyExpenseApp {
                 processCommand(command);
             }
         }
-
         System.out.println("\nGoodbye!");
     }
 
@@ -57,8 +57,6 @@ public class MonthlyExpenseApp {
         }
     }
 
-
-
     // MODIFIES: this
     // EFFECTS: initializes expenses and a monthly tracker
     private void init() {
@@ -67,8 +65,7 @@ public class MonthlyExpenseApp {
         input.useDelimiter("\n");
     }
 
-
-    // EFFECTS: displays menu of options to user
+    // EFFECTS: displays menu of options to the user
     private void displayMenu() {
         System.out.println("\nPlease choose option:");
         System.out.println("\ta -> add expense");
@@ -81,48 +78,45 @@ public class MonthlyExpenseApp {
     // MODIFIES: this
     // EFFECTS: performs the addition of an expense to the expense list
     private void doAddExpense() {
-
         System.out.print("Enter the expense: $");
         float amount = input.nextFloat();
         System.out.println(amount);
 
-        System.out.print("Enter the decription of expense: $");
+        System.out.print("Enter the description of expense: ");
         String detail = input.next();
 
-        if (amount >= 0.0) {
+        if (amount > 0.0 && detail.length() > 0) {
             expense = new Expense(amount, detail);
             expenseList.addExpense(expense);
-
+        } else if (amount <= 0) {
+            System.out.println("Cannot enter $0.00 or a negative amount... \n");
         } else {
-            System.out.println("Cannot deposit negative amount...\n");
+            System.out.println("Please enter a valid description... \n");
         }
-
         expenseTotal(expenseList);
     }
 
     // MODIFIES: this
     // EFFECTS: performs the removal of an expense from the expense list
     private void doRemoveExpense() {
-        //Account selected = selectAccount();
         System.out.print("Enter the amount of the expense to remove: $");
         float amount = input.nextFloat();
 
-        System.out.print("Enter its description: ");
+        System.out.print("Enter the description of the expense: ");
         String detail = input.next();
 
-        if (amount < 0.0) {
-            System.out.println("Cannot remove a negative amount...\n");
+        if (amount <= 0.0) {
+            System.out.println("Cannot remove $0.00 or a negative amount...\n");
+        } else if (detail.length() == 0) {
+            System.out.println("Description is not valid...\n");
         } else if (expenseList.sumExpenses() < amount) {
-            System.out.println("Expense is not present...\n");
+            System.out.println("Amount is greater than the sum of expenses...\n");
         } else {
-
             expense = new Expense(amount, detail);
             expenseList.removeExpense(expense);
-
         }
         expenseTotal(expenseList);
     }
-
 
     // EFFECTS: calls expenseTotal() to provide a print-out of the sum of
     //          expenses in the expenseList
@@ -137,7 +131,6 @@ public class MonthlyExpenseApp {
         } else {
             System.out.println(expenseList.viewExpenses());
         }
-
     }
 
     // EFFECTS: prints the sum of expenses to the screen

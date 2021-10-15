@@ -3,27 +3,27 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-// Represents a list of expenses, each expense has an associated value and description
+// Represents a list of expenses, with each expense having an associated value (in dollars) and description
 public class MonthlyTracker {
-    private List<Expense> monthlyExpenses;
-    private int size;
+    private List<Expense> monthlyExpenses; // List of expenses
+    private int size;                      // represents the size of list of expenses
 
-    // Constructor that creates a new array list and sets the size to 0 and expenseSum to 0
+    // EFFECTS: Constructor that creates an empty array list and sets the size to 0
     public MonthlyTracker() {
         this.monthlyExpenses = new ArrayList<>();
         this.size = 0;
     }
 
     // MODIFIES: this
-    // EFFECTS: Adds the expense to the back of the array list
+    // EFFECTS: Adds the expense to the back of the array list and increases size of list by 1
     public void addExpense(Expense e) {
-        monthlyExpenses.add(e);
+        this.monthlyExpenses.add(e);
         size++;
     }
 
-    // REQUIRES: monthlyExpenses must not be empty
     // MODIFIES: this
-    // EFFECTS: removes the expense from the list.
+    // EFFECTS: removes the expense from the list and decreases size by 1, does
+    //          nothing if exact expense is not found in list
     public void removeExpense(Expense e) {
         for (Expense ex: monthlyExpenses) {
             if (ex.getAmount() == e.getAmount() && ex.getDescription().equals(e.getDescription())) {
@@ -35,7 +35,8 @@ public class MonthlyTracker {
     }
 
 
-    // EFFECTS: returns the sum of the expenses in monthlyExpenses
+    // EFFECTS: returns the sum of the expenses in monthlyExpenses, 0 if
+    //          the list is empty
     public float sumExpenses() {
         float expenseSum = 0;
         for (Expense e: monthlyExpenses) {
@@ -44,7 +45,7 @@ public class MonthlyTracker {
         return expenseSum;
     }
 
-    // REQUIRES: monthlyExpenses has 1 or more expenses
+    // REQUIRES: monthlyExpenses has > 0 expenses
     // EFFECTS: adds each expense in monthlyExpenses to monthlyExpenseList
     //          returns the list of expenses as a list of strings
     public List<String> viewExpenses() {
