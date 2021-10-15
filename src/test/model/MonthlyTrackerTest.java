@@ -50,13 +50,13 @@ class MonthlyTrackerTest {
 
         testExpense = new Expense(100F, "inList");
         testExpense2 = new Expense(500F, "notInList");
-        testExpense3 = new Expense(100F, "inList");
+        testExpense3 = new Expense(100F, "test");
         testExpenseList.addExpense(testExpense);
         assertEquals(1,testExpenseList.getSize());
         testExpenseList.removeExpense(testExpense2);
         assertEquals(1, testExpenseList.getSize());
         testExpenseList.removeExpense(testExpense3);
-        assertEquals(0, testExpenseList.getSize());
+        assertEquals(1, testExpenseList.getSize());
 
     }
 
