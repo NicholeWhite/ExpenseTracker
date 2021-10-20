@@ -24,5 +24,6 @@ will help me and (hopefully) other people to visualize and track their finances.
 - As a user, I would like to delete an expense from the monthly tracker
 - As a user, I would like to add all the expense values together in the monthly tracker 
 - As a user, I would like to view expenses in the monthly tracker
-
+- As a user, I would like to save the expenses in the monthly tracker to a file
+- As a user, I would like the option to load the monthly tracker from a previously saved file
 
