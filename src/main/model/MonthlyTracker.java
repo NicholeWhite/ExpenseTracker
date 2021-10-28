@@ -1,19 +1,30 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.Writable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 // Represents a list of expenses, with each expense having an associated value (in dollars) and description
-public class MonthlyTracker {
+public class MonthlyTracker implements Writable {
     private List<Expense> monthlyExpenses; // List of expenses
     private int size;                      // represents the size of list of expenses
+    private String month;
 
     // EFFECTS: Constructor that creates an empty array list and sets the size to 0
     public MonthlyTracker() {
         this.monthlyExpenses = new ArrayList<>();
         this.size = 0;
+        this.month = "";
     }
 
+     public MonthlyTracker(String month) {
+        this.monthlyExpenses = new ArrayList<>();
+        this.size = 0;
+        this.month = month;
+    }
     // MODIFIES: this
     // EFFECTS: Adds the expense to the back of the array list and increases size of list by 1
     public void addExpense(Expense e) {
@@ -63,6 +74,33 @@ public class MonthlyTracker {
 
     public int getSize() {
         return this.size;
+    }
+
+    public String getName() {
+        return this.month;
+    }
+
+    public List<Expense> getMonthlyExpenses() {
+        return monthlyExpenses;
+    }
+
+
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("Month", month);
+        json.put("Expense", expensesToJson());
+        return json;
+    }
+
+    // EFFECTS: returns things in this workroom as a JSON array
+    private JSONArray expensesToJson() {
+        JSONArray jsonArray = new JSONArray();
+        for (Expense e : monthlyExpenses) {
+            jsonArray.put(e.toJson());
+        }
+        return jsonArray;
     }
 
 }

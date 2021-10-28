@@ -1,0 +1,15 @@
+{
+  "Month": "Monthly Expenses",
+
+  "Expense": [
+    {
+      "Expense": "100F",
+      "description": "hydro"
+    },
+    {
+      "Expense": "1000F",
+      "description": "rent"
+    }
+  ]
+
+}

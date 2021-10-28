@@ -30,7 +30,7 @@ public class JsonReaderTest extends JsonTest {
         try {
             MonthlyTracker t = reader.read();
             assertEquals("Monthly Expenses", t.getName());
-            assertEquals(0, t.numExpenses());
+            assertEquals(0, t.getSize());
         } catch (IOException e) {
             fail("Could not read from file");
         }
@@ -43,7 +43,7 @@ public class JsonReaderTest extends JsonTest {
         try {
             MonthlyTracker t = reader.read();
             assertEquals("Monthly Expenses", t.getName());
-            List<Expense> expenses = t.getExpenses();
+            List<Expense> expenses = t.getMonthlyExpenses();
             assertEquals(2, expenses.size());
             checkExpense("hydro", 100F, expenses.get(0));
             checkExpense("rent", 1000F, expenses.get(1));

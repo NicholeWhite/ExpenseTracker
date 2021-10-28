@@ -1,11 +1,14 @@
 package model;
 
 
+import org.json.JSONObject;
+import persistence.Writable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 // Represents a single expense having a value (in dollars) and a description for the expense
-public class Expense {
+public class Expense implements Writable {
     private float expense;              // value of the expense
     private String entryDescription;    // description of expense
 
@@ -31,6 +34,15 @@ public class Expense {
 
     public String getDescription() {
         return this.entryDescription;
+    }
+
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("Expense", expense);
+        json.put("description", entryDescription);
+        return json;
     }
 
 }

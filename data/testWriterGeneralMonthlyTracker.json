@@ -1,0 +1,13 @@
+{
+    "Month": "January",
+    "Expense": [
+        {
+            "Expense": 500,
+            "description": "rent"
+        },
+        {
+            "Expense": 100,
+            "description": "hydro"
+        }
+    ]
+}
