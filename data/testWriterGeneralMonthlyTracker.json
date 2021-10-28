@@ -2,12 +2,12 @@
     "Month": "January",
     "Expense": [
         {
-            "Expense": 500,
-            "description": "rent"
+            "description": "rent",
+            "expense": 500
         },
         {
-            "Expense": 100,
-            "description": "hydro"
+            "description": "hydro",
+            "expense": 100
         }
     ]
 }

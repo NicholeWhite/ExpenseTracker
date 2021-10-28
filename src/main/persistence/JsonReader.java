@@ -19,13 +19,14 @@ public class JsonReader {
         this.source = source;
     }
 
-    // EFFECTS: reads workroom from file and returns it;
+    // EFFECTS: reads monthlyExpenses from file and returns it;
     // throws IOException if an error occurs reading data from file
     public MonthlyTracker read() throws IOException {
         String jsonData = readFile(source);
         JSONObject jsonObject = new JSONObject(jsonData);
-        return parseWorkRoom(jsonObject);
+        return parseMonthlyTracker(jsonObject);
     }
+
 
     // EFFECTS: reads source file as string and returns it
     private String readFile(String source) throws IOException {
@@ -38,17 +39,16 @@ public class JsonReader {
         return contentBuilder.toString();
     }
 
-    // EFFECTS: parses workroom from JSON object and returns it
-    private MonthlyTracker parseWorkRoom(JSONObject jsonObject) {
-        System.out.print(jsonObject);
+    // EFFECTS: parses monthlyExpenses from JSON object and returns it
+    private MonthlyTracker parseMonthlyTracker(JSONObject jsonObject) {
         String name = jsonObject.getString("Month");
         MonthlyTracker t = new MonthlyTracker(name);
         addItems(t, jsonObject);
         return t;
     }
 
-    // MODIFIES: wr
-    // EFFECTS: parses thingies from JSON object and adds them to workroom
+    // MODIFIES: t
+    // EFFECTS: parses Expenses from JSON object and adds them to monthlyExpenses
     private void addItems(MonthlyTracker t, JSONObject jsonObject) {
         JSONArray jsonArray = jsonObject.getJSONArray("Expense");
         for (Object json : jsonArray) {
@@ -58,11 +58,10 @@ public class JsonReader {
     }
 
     // MODIFIES: t
-    // EFFECTS: parses thingy from JSON object and adds it to workroom
+    // EFFECTS: parses expense from JSON object and adds it to monthlyExpenses
     private void addItem(MonthlyTracker t, JSONObject jsonObject) {
         String description = jsonObject.getString("description");
-        System.out.printf("descroption", description);
-        String amount = String.valueOf(jsonObject.getString("Expense"));
+        Float amount = Float.valueOf(jsonObject.getFloat("expense"));
         Expense expense = new Expense(Float.valueOf(amount), description);
         t.addExpense(expense);
     }

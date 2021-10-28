@@ -2,7 +2,11 @@ package ui;
 
 import model.Expense;
 import model.MonthlyTracker;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 // This class references and uses code from the TellerApp
@@ -10,13 +14,17 @@ import java.util.Scanner;
 
 // Provides a console based interface for the user to interact with
 public class MonthlyExpenseApp {
+    private static final String JSON_STORE = "./data/expenseListData.json";
     private MonthlyTracker expenseList;
     private Expense expense;
     private Scanner input;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
 
     // EFFECTS: runs the monthly expense application
     public MonthlyExpenseApp() {
         runExpenseTracker();
+
     }
 
     // MODIFIES: this
@@ -52,6 +60,10 @@ public class MonthlyExpenseApp {
             doSumExpenses();
         } else if (command.equals("l")) {
             doViewExpenses();
+        } else if (command.equals("s")) {
+            saveExpenseList();
+        } else if (command.equals("o")) {
+            openExpenseList();
         } else {
             System.out.println("Selection not valid...");
         }
@@ -63,6 +75,10 @@ public class MonthlyExpenseApp {
         expenseList = new MonthlyTracker();
         input = new Scanner(System.in);
         input.useDelimiter("\n");
+
+        jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
+
     }
 
     // EFFECTS: displays menu of options to the user
@@ -72,6 +88,8 @@ public class MonthlyExpenseApp {
         System.out.println("\tr -> remove expense");
         System.out.println("\tt -> view total expenses");
         System.out.println("\tl -> list all expenses");
+        System.out.println("\ts -> save expense tracker to file");
+        System.out.println("\to -> open expense tracker from file");
         System.out.println("\tq -> quit");
     }
 
@@ -137,6 +155,30 @@ public class MonthlyExpenseApp {
     private void expenseTotal(MonthlyTracker expenses) {
         System.out.print("Total Expenses: $");
         System.out.print(expenses.sumExpenses());
+    }
+
+
+    // EFFECTS: saves the expenseList to file
+    private void saveExpenseList() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(expenseList);
+            jsonWriter.close();
+            System.out.println("Saved " + expenseList.getName() + " to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads expenseList from file
+    private void openExpenseList() {
+        try {
+            expenseList = jsonReader.read();
+            System.out.println("Loaded " + expenseList.getName() + " from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
+        }
     }
 
 }

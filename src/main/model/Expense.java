@@ -40,7 +40,7 @@ public class Expense implements Writable {
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        json.put("Expense", expense);
+        json.put("expense", expense);
         json.put("description", entryDescription);
         return json;
     }

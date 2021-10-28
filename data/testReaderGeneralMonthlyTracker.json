@@ -3,11 +3,11 @@
 
   "Expense": [
     {
-      "Expense": "100F",
+      "expense": "100F",
       "description": "hydro"
     },
     {
-      "Expense": "1000F",
+      "expense": "1000F",
       "description": "rent"
     }
   ]

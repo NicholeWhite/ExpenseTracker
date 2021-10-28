@@ -20,11 +20,12 @@ public class MonthlyTracker implements Writable {
         this.month = "";
     }
 
-     public MonthlyTracker(String month) {
+    public MonthlyTracker(String month) {
         this.monthlyExpenses = new ArrayList<>();
         this.size = 0;
         this.month = month;
     }
+
     // MODIFIES: this
     // EFFECTS: Adds the expense to the back of the array list and increases size of list by 1
     public void addExpense(Expense e) {
@@ -94,7 +95,7 @@ public class MonthlyTracker implements Writable {
         return json;
     }
 
-    // EFFECTS: returns things in this workroom as a JSON array
+    // EFFECTS: returns expenses in this monthlyExpenses as a JSON array
     private JSONArray expensesToJson() {
         JSONArray jsonArray = new JSONArray();
         for (Expense e : monthlyExpenses) {

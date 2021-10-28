@@ -4,7 +4,7 @@ import model.MonthlyTracker;
 import org.json.JSONObject;
 import java.io.*;
 
-// Represents a writer that writes JSON representation of workroom to file
+// Represents a writer that writes JSON representation of monthlyExpenses to file
 public class JsonWriter {
     private static final int TAB = 4;
     private PrintWriter writer;
@@ -23,7 +23,7 @@ public class JsonWriter {
     }
 
     // MODIFIES: this
-    // EFFECTS: writes JSON representation of workroom to file
+    // EFFECTS: writes JSON representation of monthlyExpenses to file
     public void write(MonthlyTracker t) {
         JSONObject json = t.toJson();
         saveToFile(json.toString(TAB));
