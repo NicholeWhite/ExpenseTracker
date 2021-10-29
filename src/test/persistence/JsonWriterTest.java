@@ -61,7 +61,7 @@ public class JsonWriterTest extends JsonTest {
             t = reader.read();
             assertEquals("January", t.getName());
             List<Expense> expenses = t.getMonthlyExpenses();
-            System.out.println(expenses);
+
             assertEquals(2, expenses.size());
             checkExpense("rent", 500F, expenses.get(0));
             checkExpense("hydro", 100F, expenses.get(1));

@@ -87,4 +87,10 @@ class MonthlyTrackerTest {
        assertEquals(testList, testExpenseList.viewExpenses());
     }
 
+    @Test
+    void testSetMonth() {
+        testExpenseList.setMonth("January");
+        assertEquals("January", testExpenseList.getMonth());
+    }
+
 }
