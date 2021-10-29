@@ -74,13 +74,15 @@ public class MonthlyTracker implements Writable {
         return this.size == 0;
     }
 
-    //Getters
+
     public int getSize() {
         return this.size;
     }
+
     public String getName() {
         return this.month;
     }
+
     public List<Expense> getMonthlyExpenses() {
         return monthlyExpenses;
     }
@@ -89,7 +91,7 @@ public class MonthlyTracker implements Writable {
         return this.month;
     }
 
-    //Setter
+
     public void setMonth(String month) {
         this.month = month;
     }
