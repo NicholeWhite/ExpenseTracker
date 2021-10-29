@@ -28,10 +28,10 @@ public class Expense implements Writable {
         return expenseList;
     }
 
+    //Getters
     public float getAmount() {
         return this.expense;
     }
-
     public String getDescription() {
         return this.entryDescription;
     }

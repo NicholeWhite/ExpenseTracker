@@ -11,6 +11,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+
+// This class references and uses code from the JsonSerializationDemo
+// https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
+
+// Represents a reader that reads JSON files with monthlyExpenses
 public class JsonReader {
     private String source;
 
@@ -43,13 +48,13 @@ public class JsonReader {
     private MonthlyTracker parseMonthlyTracker(JSONObject jsonObject) {
         String name = jsonObject.getString("Month");
         MonthlyTracker t = new MonthlyTracker(name);
-        addItems(t, jsonObject);
+        addExpenses(t, jsonObject);
         return t;
     }
 
     // MODIFIES: t
     // EFFECTS: parses Expenses from JSON object and adds them to monthlyExpenses
-    private void addItems(MonthlyTracker t, JSONObject jsonObject) {
+    private void addExpenses(MonthlyTracker t, JSONObject jsonObject) {
         JSONArray jsonArray = jsonObject.getJSONArray("Expense");
         for (Object json : jsonArray) {
             JSONObject nextExpense = (JSONObject) json;
@@ -58,7 +63,7 @@ public class JsonReader {
     }
 
     // MODIFIES: t
-    // EFFECTS: parses expense from JSON object and adds it to monthlyExpenses
+    // EFFECTS: parses the expense from JSON object and adds it to monthlyExpenses
     private void addItem(MonthlyTracker t, JSONObject jsonObject) {
         String description = jsonObject.getString("description");
         Float amount = Float.valueOf(jsonObject.getFloat("expense"));

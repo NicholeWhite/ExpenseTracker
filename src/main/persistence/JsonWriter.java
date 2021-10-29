@@ -4,6 +4,9 @@ import model.MonthlyTracker;
 import org.json.JSONObject;
 import java.io.*;
 
+// This class references and uses code from the JsonSerializationDemo
+// https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
+
 // Represents a writer that writes JSON representation of monthlyExpenses to file
 public class JsonWriter {
     private static final int TAB = 4;

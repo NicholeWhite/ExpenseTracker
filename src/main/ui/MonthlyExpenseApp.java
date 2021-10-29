@@ -33,7 +33,9 @@ public class MonthlyExpenseApp {
         boolean keepGoing = true;
         String command = null;
 
+
         init();
+        expenseList.setMonth(command);
 
         while (keepGoing) {
             displayMenu();
@@ -52,7 +54,9 @@ public class MonthlyExpenseApp {
     // MODIFIES: this
     // EFFECTS: processes user command
     private void processCommand(String command) {
-        if (command.equals("a")) {
+        if (command.equals("m")) {
+            doSetMonth();
+        } else if (command.equals("a")) {
             doAddExpense();
         } else if (command.equals("r")) {
             doRemoveExpense();
@@ -84,6 +88,7 @@ public class MonthlyExpenseApp {
     // EFFECTS: displays menu of options to the user
     private void displayMenu() {
         System.out.println("\nPlease choose option:");
+        System.out.println("\tm -> set month");
         System.out.println("\ta -> add expense");
         System.out.println("\tr -> remove expense");
         System.out.println("\tt -> view total expenses");
@@ -92,6 +97,8 @@ public class MonthlyExpenseApp {
         System.out.println("\to -> open expense tracker from file");
         System.out.println("\tq -> quit");
     }
+
+
 
     // MODIFIES: this
     // EFFECTS: performs the addition of an expense to the expense list
@@ -179,6 +186,14 @@ public class MonthlyExpenseApp {
         } catch (IOException e) {
             System.out.println("Unable to read from file: " + JSON_STORE);
         }
+    }
+
+    //MODIFIES: this
+    //EFFECTS: specifies a month for expenseList
+    private void doSetMonth() {
+        System.out.print("Enter the month: ");
+        String month = input.next();
+        expenseList.setMonth(month);
     }
 
 }

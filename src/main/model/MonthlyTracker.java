@@ -13,13 +13,14 @@ public class MonthlyTracker implements Writable {
     private int size;                      // represents the size of list of expenses
     private String month;
 
-    // EFFECTS: Constructor that creates an empty array list and sets the size to 0
+    // EFFECTS: Constructor that creates an empty array list, sets the size to 0, and has a blank month;
     public MonthlyTracker() {
         this.monthlyExpenses = new ArrayList<>();
         this.size = 0;
         this.month = "";
     }
 
+    // EFFECTS: Constructor that creates an empty array list, sets the size to 0 and specifies a month;
     public MonthlyTracker(String month) {
         this.monthlyExpenses = new ArrayList<>();
         this.size = 0;
@@ -73,19 +74,25 @@ public class MonthlyTracker implements Writable {
         return this.size == 0;
     }
 
+    //Getters
     public int getSize() {
         return this.size;
     }
-
     public String getName() {
         return this.month;
     }
-
     public List<Expense> getMonthlyExpenses() {
         return monthlyExpenses;
     }
 
+    public String getMonth() {
+        return this.month;
+    }
 
+    //Setter
+    public void setMonth(String month) {
+        this.month = month;
+    }
 
     @Override
     public JSONObject toJson() {
