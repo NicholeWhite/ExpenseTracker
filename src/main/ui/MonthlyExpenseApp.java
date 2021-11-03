@@ -177,6 +177,7 @@ public class MonthlyExpenseApp {
         }
     }
 
+    // REQUIRES: list not null
     // MODIFIES: this
     // EFFECTS: loads expenseList from file
     private void openExpenseList() {
