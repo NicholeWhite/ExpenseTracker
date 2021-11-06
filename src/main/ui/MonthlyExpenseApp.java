@@ -168,14 +168,20 @@ public class MonthlyExpenseApp {
     // EFFECTS: saves the expenseList to file
     private void saveExpenseList() {
         try {
-            jsonWriter.open();
-            jsonWriter.write(expenseList);
-            jsonWriter.close();
-            System.out.println("Saved " + expenseList.getName() + " to " + JSON_STORE);
+            if (expenseList.getMonth() != null) {
+                jsonWriter.open();
+                jsonWriter.write(expenseList);
+                jsonWriter.close();
+                System.out.println("Saved " + expenseList.getName() + " to " + JSON_STORE);
+            } else {
+                System.out.println("Please specify a month before saving");
+            }
         } catch (FileNotFoundException e) {
             System.out.println("Unable to write to file: " + JSON_STORE);
         }
     }
+
+
 
     // MODIFIES: this
     // EFFECTS: loads expenseList from file
