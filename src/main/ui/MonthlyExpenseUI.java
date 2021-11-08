@@ -1,66 +1,313 @@
 package ui;
 
-import model.MonthlyTracker;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.text.*;
 
-
-public class MonthlyExpenseUI extends JFrame implements ActionListener {
-    private JLabel label;
-    private JLabel label2;
-    private JTextField field;
-    private JTextField field2;
-
-    private MonthlyTracker tracker;
-
-
-
+/**
+ * TextInputDemo.java uses these additional files:
+ *   SpringUtilities.java
+ *   ...
+ */
+public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusListener {
+    JTextField expenseField;
+    JTextField descriptionField;
+    //JFormattedTextField zipField;
+    JSpinner monthSpinner;
+    boolean addressSet = false;
+    Font regularFont;
+    Font italicFont;
+    JLabel addressDisplay;
+    static final int GAP = 10;
 
     public MonthlyExpenseUI() {
-        super("Monthly Expense Tracker");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(500, 400));
-        ((JPanel) getContentPane()).setBorder(new EmptyBorder(13, 13, 13, 13) );
-        setLayout(new FlowLayout());
-        JButton btn = new JButton("Change");
-        btn.setActionCommand("myButton");
-        btn.addActionListener(this); // Sets "this" object as an action listener for btn
-        // so that when the btn is clicked,
-        // this.actionPerformed(ActionEvent e) will be called.
-        // You could also set a different object, if you wanted
-        // a different object to respond to the button click
-        label = new JLabel("flag");
-        field = new JTextField(15);
-        field2 = new JTextField(15);
-        add(field);
-        add(field2);
-        add(btn);
-        add(label);
+        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
-        
+        JPanel leftHalf = new JPanel() {
+            //Don't allow us to stretch vertically.
+            public Dimension getMaximumSize() {
+                Dimension pref = getPreferredSize();
+                return new Dimension(Integer.MAX_VALUE,
+                        pref.height);
+            }
+        };
+        leftHalf.setLayout(new BoxLayout(leftHalf,
+                BoxLayout.PAGE_AXIS));
+        leftHalf.add(createEntryFields());
+        leftHalf.add(createButtons());
 
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-        setResizable(false);
+        add(leftHalf);
+        add(createAddressDisplay());
     }
 
-    //This is the method that is called when the JButton btn is clicked
+    protected JComponent createButtons() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+
+        JButton button = new JButton("Add Expense");
+        button.addActionListener(this);
+        panel.add(button);
+
+        button = new JButton("Clear");
+        button.addActionListener(this);
+        button.setActionCommand("clear");
+        panel.add(button);
+
+        //Match the SpringLayout's gap, subtracting 5 to make
+        //up for the default gap FlowLayout provides.
+        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, GAP - 5,  GAP - 5));
+        return panel;
+    }
+
+    /**
+     * Called when the user clicks the button or presses
+     * Enter in a text field.
+     */
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("myButton")) {
-            label.setText(field.getText());
+        if ("clear".equals(e.getActionCommand())) {
+            addressSet = false;
+            expenseField.setText("");
+            descriptionField.setText("");
+
+            //We can't just setText on the formatted text
+            //field, since its value will remain set.
+            //zipField.setValue(null);
+        } else {
+            addressSet = true;
+        }
+        updateDisplays();
+    }
+
+    protected void updateDisplays() {
+        addressDisplay.setText(formatAddress());
+        if (addressSet) {
+            addressDisplay.setFont(regularFont);
+        } else {
+            addressDisplay.setFont(italicFont);
         }
     }
 
+    protected JComponent createAddressDisplay() {
+        JPanel panel = new JPanel(new BorderLayout());
+        addressDisplay = new JLabel();
+        addressDisplay.setHorizontalAlignment(JLabel.CENTER);
+        regularFont = addressDisplay.getFont().deriveFont(Font.PLAIN,
+                16.0f);
+        italicFont = regularFont.deriveFont(Font.ITALIC);
+        updateDisplays();
 
-    
+        //Lay out the panel.
+        panel.setBorder(BorderFactory.createEmptyBorder(GAP / 2, //top
+                0,     //left
+                GAP / 2, //bottom
+                0));   //right
+        panel.add(new JSeparator(JSeparator.VERTICAL),
+                BorderLayout.LINE_START);
+        panel.add(addressDisplay,
+                BorderLayout.CENTER);
+        panel.setPreferredSize(new Dimension(200, 150));
+
+        return panel;
+    }
+
+    protected String formatAddress() {
+        if (!addressSet) {
+            return "No Expenses Added.";
+        }
+
+        String expense = expenseField.getText();
+        String description = descriptionField.getText();
+        String month = (String) monthSpinner.getValue();
+       // String zip = zipField.getText();
+        String empty = "";
+
+
+        if ((expense == null) || empty.equals(expense)) {
+            expense = "<em>(no expense specified)</em>";
+        }
+        if ((description == null) || empty.equals(description)) {
+            description = "<em>(no description specified)</em>";
+        }
+        if ((month == null) || empty.equals(month)) {
+            month = "<em>(no month specified)</em>";
+        } else {
+            int abbrevIndex = month.indexOf('(') + 1;
+            month = month.substring(abbrevIndex,
+                    abbrevIndex + 2);
+        }
+        //if ((zip == null) || empty.equals(zip)) {
+       //     zip = "";
+       // }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(<em>"Added Expense:");
+        sb.append("<html><p align=center>");
+        sb.append(expense);
+        sb.append("<br>");
+        sb.append(description);
+        sb.append(" ");
+        sb.append(month); //should format
+        sb.append(" ");
+        //sb.append(zip);
+       // sb.append("</p></html>");
+
+        return sb.toString();
+    }
+
+    //A convenience method for creating a MaskFormatter.
+    protected MaskFormatter createFormatter(String s) {
+        MaskFormatter formatter = null;
+        try {
+            formatter = new MaskFormatter(s);
+        } catch (java.text.ParseException exc) {
+            System.err.println("formatter is bad: " + exc.getMessage());
+            System.exit(-1);
+        }
+        return formatter;
+    }
+
+    /**
+     * Called when one of the fields gets the focus so that
+     * we can select the focused field.
+     */
+    public void focusGained(FocusEvent e) {
+        Component c = e.getComponent();
+        if (c instanceof JFormattedTextField) {
+            selectItLater(c);
+        } else if (c instanceof JTextField) {
+            ((JTextField)c).selectAll();
+        }
+    }
+
+    //Workaround for formatted text field focus side effects.
+    protected void selectItLater(Component c) {
+        if (c instanceof JFormattedTextField) {
+            final JFormattedTextField ftf = (JFormattedTextField)c;
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    ftf.selectAll();
+                }
+            });
+        }
+    }
+
+    //Needed for FocusListener interface.
+    public void focusLost(FocusEvent e) { } //ignore
+
+    protected JComponent createEntryFields() {
+        JPanel panel = new JPanel(new SpringLayout());
+
+        String[] labelStrings = {
+                "Month: ",
+                "Expense: ",
+                "Description: ",
+              //  "Zip code: "
+        };
+
+        JLabel[] labels = new JLabel[labelStrings.length];
+        JComponent[] fields = new JComponent[labelStrings.length];
+        int fieldNum = 0;
+
+        //Create the text field and set it up.
+        expenseField = new JTextField();
+        expenseField.setColumns(20);
+        fields[fieldNum++] = expenseField;
+
+        descriptionField = new JTextField();
+        descriptionField.setColumns(20);
+        fields[fieldNum++] = descriptionField;
+
+        String[] stateStrings = getMonth();
+        monthSpinner = new JSpinner(new SpinnerListModel(stateStrings));
+        fields[fieldNum++] = monthSpinner;
+
+        //Field = new JFormattedTextField(
+               // createFormatter("#####"));
+        //fields[fieldNum++] = zipField;
+
+        //Associate label/field pairs, add everything,
+        //and lay it out.
+        for (int i = 0; i < labelStrings.length; i++) {
+            labels[i] = new JLabel(labelStrings[i],
+                    JLabel.TRAILING);
+            labels[i].setLabelFor(fields[i]);
+            panel.add(labels[i]);
+            panel.add(fields[i]);
+
+            //Add listeners to each field.
+            JTextField tf = null;
+            if (fields[i] instanceof JSpinner) {
+                tf = getTextField((JSpinner)fields[i]);
+            } else {
+                tf = (JTextField)fields[i];
+            }
+            tf.addActionListener(this);
+            tf.addFocusListener(this);
+        }
+        SpringUtilities.makeCompactGrid(panel,
+                labelStrings.length, 2,
+                GAP, GAP, //init x,y
+                GAP, GAP / 2);//xpad, ypad
+        return panel;
+    }
+
+
+    public String[] getMonth() {
+        String[] month = { "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December"
+        };
+        return month;
+    }
+
+    public JFormattedTextField getTextField(JSpinner spinner) {
+        JComponent editor = spinner.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            return ((JSpinner.DefaultEditor)editor).getTextField();
+        } else {
+            System.err.println("Unexpected editor type: "
+                    + spinner.getEditor().getClass()
+                    + " isn't a descendant of DefaultEditor");
+            return null;
+        }
+    }
+
+    /**
+     * Create the GUI and show it.  For thread safety,
+     * this method should be invoked from the
+     * event dispatch thread.
+     */
+    private static void createAndShowGUI() {
+        //Create and set up the window.
+        JFrame frame = new JFrame("TextInputDemo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Add contents to the window.
+        frame.add(new MonthlyExpenseUI());
+
+        //Display the window.
+        frame.pack();
+        frame.setVisible(true);
+    }
+
     public static void main(String[] args) {
-        new MonthlyExpenseUI();
+        //Schedule a job for the event dispatch thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                //Turn off metal's use of bold fonts
+                UIManager.put("swing.boldMetal", Boolean.FALSE);
+                createAndShowGUI();
+            }
+        });
     }
 }
