@@ -1,16 +1,29 @@
 package ui;
 
+import model.Expense;
+import model.MonthlyTracker;
+import persistence.JsonReader;
+import persistence.JsonWriter;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.text.*;
 
+
 /**
+ * This class uses the framework provided by
  * TextInputDemo.java uses these additional files:
  *   SpringUtilities.java
  *   ...
+ *
+ *   Code in this clasee also uses the JOptionPane for the error dialogs:
+ *   https://docs.oracle.com/javase/8/docs/api/javax/swing/JOptionPane.html
  */
 public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusListener {
+    private static final String JSON_STORE = "./data/expenseListData.json";
     JTextField expenseField;
     JTextField descriptionField;
     //JFormattedTextField zipField;
@@ -20,8 +33,16 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     Font italicFont;
     JLabel addressDisplay;
     static final int GAP = 10;
+    private MonthlyTracker expenseList;
+    private Expense expense;
+    private Scanner input;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
+
 
     public MonthlyExpenseUI() {
+        init();
+
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         JPanel leftHalf = new JPanel() {
@@ -37,6 +58,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         leftHalf.add(createEntryFields());
         leftHalf.add(createButtons());
 
+
         add(leftHalf);
         add(createAddressDisplay());
     }
@@ -46,12 +68,15 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
         JButton button = new JButton("Add Expense");
         button.addActionListener(this);
+        button.setActionCommand("add");
         panel.add(button);
 
         button = new JButton("Clear");
         button.addActionListener(this);
         button.setActionCommand("clear");
         panel.add(button);
+
+
 
         //Match the SpringLayout's gap, subtracting 5 to make
         //up for the default gap FlowLayout provides.
@@ -72,10 +97,79 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             //We can't just setText on the formatted text
             //field, since its value will remain set.
             //zipField.setValue(null);
+
         } else {
+            if (checkValid(expenseField, descriptionField) != true) {
+                return;
+            }
+            Expense expense = new Expense(Float.valueOf(expenseField.getText()), descriptionField.getText());
+            expenseList.addExpense(expense);
+            System.out.println(expenseList.viewExpenses());
             addressSet = true;
         }
+
         updateDisplays();
+
+    }
+
+
+    // EFFECTS: returns false if the expense or description is not valid, true otherwise
+    public boolean checkValid(JTextField expense, JTextField description) {
+        String validExpense = isValidExpense(expense);
+        if (validExpense != "") {
+
+            JOptionPane.showMessageDialog(null,
+                    validExpense, "Error!", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        String validDescription = isValidDescription(description);
+        if (validDescription != "") {
+
+            JOptionPane.showMessageDialog(null,
+                    validDescription, "Error!", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    // EFFECTS: returns a message if the expense is invalid, returns empty string otherwise
+    // invalid if negative, non-number, or 0 in value
+    public String isValidExpense(JTextField expense) {
+        String errorMessage = "";
+        try {
+            Float.parseFloat(expense.getText());
+            float val = Float.parseFloat(expense.getText());
+            if (val < 0) {
+                errorMessage = "Expense must not be negative";
+
+            } else if (val == 0) {
+                errorMessage = "Expense must not be zero";
+            }
+
+        } catch (NumberFormatException ex) {
+            errorMessage = "Expense must be a valid number ";
+        }
+
+        return errorMessage;
+    }
+
+    // EFFECTS: returns a message if the description is invalid, returns empty string otherwise
+    // invalid if negative, non-number, or 0 in value
+    public String isValidDescription(JTextField description) {
+        String errorMessage = "";
+
+        String empty = "";
+        if (description.getText().matches(".*\\d.*")) {
+            errorMessage = "Description must not contain numbers";
+        }
+
+        if ((description.getText() == null) || empty.equals(description.getText()))  {
+            errorMessage = "Description must not be empty";
+        }
+
+        return errorMessage;
     }
 
     protected void updateDisplays() {
@@ -118,7 +212,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         String expense = expenseField.getText();
         String description = descriptionField.getText();
         String month = (String) monthSpinner.getValue();
-       // String zip = zipField.getText();
+
         String empty = "";
 
 
@@ -130,26 +224,29 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         }
         if ((month == null) || empty.equals(month)) {
             month = "<em>(no month specified)</em>";
-        } else {
-            int abbrevIndex = month.indexOf('(') + 1;
-            month = month.substring(abbrevIndex,
-                    abbrevIndex + 2);
         }
-        //if ((zip == null) || empty.equals(zip)) {
-       //     zip = "";
-       // }
 
+
+        String sb = stringBufferHelper(expense, description, month);
+
+        return sb;
+    }
+
+    protected String stringBufferHelper(String expense, String description, String month) {
         StringBuffer sb = new StringBuffer();
-        sb.append(<em>"Added Expense:");
+
         sb.append("<html><p align=center>");
+        sb.append("<em>Added Expense:");
+
+        sb.append("<br>");
+        sb.append("$");
         sb.append(expense);
         sb.append("<br>");
         sb.append(description);
         sb.append(" ");
+        sb.append("<br> To the month:");
         sb.append(month); //should format
         sb.append(" ");
-        //sb.append(zip);
-       // sb.append("</p></html>");
 
         return sb.toString();
     }
@@ -198,9 +295,9 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         JPanel panel = new JPanel(new SpringLayout());
 
         String[] labelStrings = {
-                "Month: ",
                 "Expense: ",
                 "Description: ",
+                "Month: ",
               //  "Zip code: "
         };
 
@@ -210,11 +307,11 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
         //Create the text field and set it up.
         expenseField = new JTextField();
-        expenseField.setColumns(20);
+        expenseField.setColumns(15);
         fields[fieldNum++] = expenseField;
 
         descriptionField = new JTextField();
-        descriptionField.setColumns(20);
+        descriptionField.setColumns(15);
         fields[fieldNum++] = descriptionField;
 
         String[] stateStrings = getMonth();
@@ -244,14 +341,14 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             tf.addActionListener(this);
             tf.addFocusListener(this);
         }
-        SpringUtilities.makeCompactGrid(panel,
-                labelStrings.length, 2,
+        SpringUtilities.makeCompactGrid(panel, labelStrings.length, 2,
                 GAP, GAP, //init x,y
                 GAP, GAP / 2);//xpad, ypad
         return panel;
     }
 
 
+    // EFFECTS: Returns a string list of the months in the year
     public String[] getMonth() {
         String[] month = { "January",
                 "February",
@@ -294,16 +391,49 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         //Add contents to the window.
         frame.add(new MonthlyExpenseUI());
 
+
         //Display the window.
         frame.pack();
         frame.setVisible(true);
+
+
+    }
+
+    public void menuBar() {
+//        JMenuBar menuBar;
+//        JMenu menu;
+//        JMenuItem menuItem;
+//        JRadioButtonMenuItem rbMenuItem;
+//        JCheckBoxMenuItem cbMenuItem;
+
+        //Create the menu bar.
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("A Menu");
+        menu.setMnemonic(KeyEvent.VK_A);
+        menu.getAccessibleContext().setAccessibleDescription(
+                "The only menu in this program that has menu items");
+        menuBar.add(menu);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: initializes expenses and a monthly tracker
+    private void init() {
+        expenseList = new MonthlyTracker();
+        input = new Scanner(System.in);
+        input.useDelimiter("\n");
+
+        jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
+
     }
 
     public static void main(String[] args) {
+
         //Schedule a job for the event dispatch thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+
                 //Turn off metal's use of bold fonts
                 UIManager.put("swing.boldMetal", Boolean.FALSE);
                 createAndShowGUI();
