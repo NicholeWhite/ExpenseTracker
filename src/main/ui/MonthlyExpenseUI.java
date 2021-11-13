@@ -7,6 +7,7 @@ import persistence.JsonWriter;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 import javax.swing.*;
@@ -19,7 +20,7 @@ import javax.swing.text.*;
  *   SpringUtilities.java
  *   ...
  *
- *   Code in this clasee also uses the JOptionPane for the error dialogs:
+ *   Code in this class also uses the JOptionPane for the error dialogs:
  *   https://docs.oracle.com/javase/8/docs/api/javax/swing/JOptionPane.html
  */
 public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusListener {
@@ -76,6 +77,11 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         button.setActionCommand("clear");
         panel.add(button);
 
+        button = new JButton("Save Work");
+        button.addActionListener(this);
+        button.setActionCommand("save");
+        panel.add(button);
+
 
 
         //Match the SpringLayout's gap, subtracting 5 to make
@@ -98,6 +104,16 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             //field, since its value will remain set.
             //zipField.setValue(null);
 
+        } else if ("save".equals(e.getActionCommand())) {
+            try {
+                jsonWriter.open();
+                jsonWriter.write(expenseList);
+                jsonWriter.close();
+                System.out.println("Saved " + expenseList.getName() + " to " + JSON_STORE);
+
+            } catch (FileNotFoundException exception) {
+                System.out.println("Unable to write to file: " + JSON_STORE);
+            }
         } else {
             if (checkValid(expenseField, descriptionField) != true) {
                 return;
@@ -387,7 +403,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         //Create and set up the window.
         JFrame frame = new JFrame("TextInputDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        System.out.println("");
         //Add contents to the window.
         frame.add(new MonthlyExpenseUI());
 
@@ -399,12 +415,14 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
     }
 
-    public void menuBar() {
+    public JComponent menuBar() {
 //        JMenuBar menuBar;
 //        JMenu menu;
 //        JMenuItem menuItem;
 //        JRadioButtonMenuItem rbMenuItem;
 //        JCheckBoxMenuItem cbMenuItem;
+
+        JPanel panel = new JPanel(new SpringLayout());
 
         //Create the menu bar.
         JMenuBar menuBar = new JMenuBar();
@@ -413,6 +431,10 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         menu.getAccessibleContext().setAccessibleDescription(
                 "The only menu in this program that has menu items");
         menuBar.add(menu);
+
+        panel.add(menuBar);
+        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, GAP - 5,  GAP - 5));
+        return panel;
     }
 
     // MODIFIES: this
