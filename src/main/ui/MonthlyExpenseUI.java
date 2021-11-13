@@ -8,7 +8,6 @@ import persistence.JsonWriter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.text.*;
@@ -29,7 +28,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     JTextField descriptionField;
     //JFormattedTextField zipField;
     JSpinner monthSpinner;
-    boolean addressSet = false;
+    boolean expenseSet = false;
     Font regularFont;
     Font italicFont;
     JLabel addressDisplay;
@@ -96,7 +95,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
      */
     public void actionPerformed(ActionEvent e) {
         if ("clear".equals(e.getActionCommand())) {
-            addressSet = false;
+            expenseSet = false;
             expenseField.setText("");
             descriptionField.setText("");
 
@@ -121,7 +120,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             Expense expense = new Expense(Float.valueOf(expenseField.getText()), descriptionField.getText());
             expenseList.addExpense(expense);
             System.out.println(expenseList.viewExpenses());
-            addressSet = true;
+            expenseSet = true;
         }
 
         updateDisplays();
@@ -190,7 +189,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
     protected void updateDisplays() {
         addressDisplay.setText(formatAddress());
-        if (addressSet) {
+        if (expenseSet) {
             addressDisplay.setFont(regularFont);
         } else {
             addressDisplay.setFont(italicFont);
@@ -221,7 +220,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     }
 
     protected String formatAddress() {
-        if (!addressSet) {
+        if (!expenseSet) {
             return "No Expenses Added.";
         }
 
