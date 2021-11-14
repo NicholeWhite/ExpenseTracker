@@ -14,12 +14,13 @@ import javax.swing.text.*;
 
 
 /**
- * This class uses the framework provided by
+ * This class uses the framework provided by:
+ * https://docs.oracle.com/javase/tutorial/uiswing/components/formattedtextfield.html
  * TextInputDemo.java uses these additional files:
  *   SpringUtilities.java
  *   ...
  *
- *   Code in this class also uses the JOptionPane for the error dialogs:
+ *   Code in this class also uses the JOptionPane for the error/message dialogs:
  *   https://docs.oracle.com/javase/8/docs/api/javax/swing/JOptionPane.html
  */
 public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusListener {
@@ -29,6 +30,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     //JFormattedTextField zipField;
     JSpinner monthSpinner;
     boolean expenseSet = false;
+    boolean isCleared = false;
     Font regularFont;
     Font italicFont;
     JLabel addressDisplay;
@@ -96,6 +98,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     public void actionPerformed(ActionEvent e) {
         if ("clear".equals(e.getActionCommand())) {
             expenseSet = false;
+            isCleared = true;
             expenseField.setText("");
             descriptionField.setText("");
 
@@ -104,15 +107,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             //zipField.setValue(null);
 
         } else if ("save".equals(e.getActionCommand())) {
-            try {
-                jsonWriter.open();
-                jsonWriter.write(expenseList);
-                jsonWriter.close();
-                System.out.println("Saved " + expenseList.getName() + " to " + JSON_STORE);
-
-            } catch (FileNotFoundException exception) {
-                System.out.println("Unable to write to file: " + JSON_STORE);
-            }
+            saveToFile();
         } else {
             if (checkValid(expenseField, descriptionField) != true) {
                 return;
@@ -121,12 +116,30 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             expenseList.addExpense(expense);
             System.out.println(expenseList.viewExpenses());
             expenseSet = true;
+            isCleared = false;
         }
 
         updateDisplays();
 
     }
 
+
+    // MODIFIES: this
+    // EFFECTS: saves work to a file and opens a mesasage dialog show it was successful
+    //
+    public void saveToFile() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(expenseList);
+            jsonWriter.close();
+            JOptionPane.showMessageDialog(null,
+                    "Progress saved.", "Save Successful!", JOptionPane.PLAIN_MESSAGE);
+
+        } catch (FileNotFoundException exception) {
+            JOptionPane.showMessageDialog(null,
+                    "Uh oh! Unable to write to file...", "Error! ", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     // EFFECTS: returns false if the expense or description is not valid, true otherwise
     public boolean checkValid(JTextField expense, JTextField description) {
@@ -221,8 +234,13 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
     protected String formatAddress() {
         if (!expenseSet) {
+            if (isCleared) {
+                return " ";
+            }
             return "No Expenses Added.";
         }
+
+
 
         String expense = expenseField.getText();
         String description = descriptionField.getText();
@@ -306,6 +324,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     //Needed for FocusListener interface.
     public void focusLost(FocusEvent e) { } //ignore
 
+   
     protected JComponent createEntryFields() {
         JPanel panel = new JPanel(new SpringLayout());
 
