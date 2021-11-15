@@ -8,6 +8,7 @@ import persistence.JsonWriter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.text.*;
@@ -22,6 +23,9 @@ import javax.swing.text.*;
  *
  *   Code in this class also uses the JOptionPane for the error/message dialogs:
  *   https://docs.oracle.com/javase/8/docs/api/javax/swing/JOptionPane.html
+ *
+ *   Additionally, the dataToTable() function uses the JTable for the data table:
+ *   https://docs.oracle.com/javase/tutorial/uiswing/components/table.html
  */
 public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusListener {
     private static final String JSON_STORE = "./data/expenseListData.json";
@@ -44,6 +48,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
     public MonthlyExpenseUI() {
         init();
+
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
@@ -117,12 +122,30 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             System.out.println(expenseList.viewExpenses());
             expenseSet = true;
             isCleared = false;
+            dataToTable();
         }
 
         updateDisplays();
 
     }
 
+
+    public void dataToTable() {
+        String[] columnNames = {"Expense",
+                "Description",
+                "Total Expenses"};
+
+        Object[][] data = {
+                {"Kathy", "Smith",},
+                {"John", "Doe",},
+                {"Sue", "Black",},
+                {"Jane", "White",},
+                {"Joe", "Brown",}
+        };
+
+        JTable table = new JTable(data, columnNames);
+        table.setVisible(true);
+    }
 
     // MODIFIES: this
     // EFFECTS: saves work to a file and opens a mesasage dialog show it was successful
@@ -324,7 +347,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     //Needed for FocusListener interface.
     public void focusLost(FocusEvent e) { } //ignore
 
-   
+
     protected JComponent createEntryFields() {
         JPanel panel = new JPanel(new SpringLayout());
 
@@ -418,6 +441,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
      * event dispatch thread.
      */
     private static void createAndShowGUI() {
+
         //Create and set up the window.
         JFrame frame = new JFrame("TextInputDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -433,30 +457,37 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
     }
 
-    public JComponent menuBar() {
-//        JMenuBar menuBar;
-//        JMenu menu;
-//        JMenuItem menuItem;
-//        JRadioButtonMenuItem rbMenuItem;
-//        JCheckBoxMenuItem cbMenuItem;
+    //MODIFIES: this
+    //EFFECTS: asks user if would like to load previous saved work if it exists
+    // If yes, loads previous expense list
+    // If no, does nothing
+    public void loadPrevious() {
+        //Checks if file exists before asking user
+        try {
+            jsonReader.read();
+        } catch (IOException e) {
+            return;
+        }
 
-        JPanel panel = new JPanel(new SpringLayout());
+        int n = JOptionPane.showConfirmDialog(null,
+                "Would you to continue where you left off?",
+                "Load Previous Work ", JOptionPane.YES_NO_OPTION);
 
-        //Create the menu bar.
-        JMenuBar menuBar = new JMenuBar();
-        JMenu menu = new JMenu("A Menu");
-        menu.setMnemonic(KeyEvent.VK_A);
-        menu.getAccessibleContext().setAccessibleDescription(
-                "The only menu in this program that has menu items");
-        menuBar.add(menu);
-
-        panel.add(menuBar);
-        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, GAP - 5,  GAP - 5));
-        return panel;
+        if (n == 0) {
+            try {
+                expenseList = jsonReader.read();
+                isCleared = true;
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null,
+                        "Error loading file...", "Error! ", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
+
 
     // MODIFIES: this
     // EFFECTS: initializes expenses and a monthly tracker
+    // prompts user to load expense
     private void init() {
         expenseList = new MonthlyTracker();
         input = new Scanner(System.in);
@@ -465,7 +496,12 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         jsonWriter = new JsonWriter(JSON_STORE);
         jsonReader = new JsonReader(JSON_STORE);
 
+        loadPrevious();
+        System.out.println(expenseList.viewExpenses());
+
     }
+
+
 
     public static void main(String[] args) {
 
