@@ -65,6 +65,8 @@ public class SpringUtilities {
      * @param padX x padding between cells
      * @param padY y padding between cells
      */
+
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public static void makeGrid(Container parent,
                                 int rows, int cols,
                                 int initialX, int initialY,
@@ -166,6 +168,7 @@ public class SpringUtilities {
      * @param padX x padding between cells
      * @param padY y padding between cells
      */
+
     public static void makeCompactGrid(Container parent,
                                        int rows, int cols,
                                        int initialX, int initialY,
@@ -179,23 +182,18 @@ public class SpringUtilities {
         }
 
         //Align all cells in each column and make them the same width.
-        Spring x = Spring.constant(initialX);
-        for (int c = 0; c < cols; c++) {
-            Spring width = Spring.constant(0);
-            for (int r = 0; r < rows; r++) {
-                width = Spring.max(width,
-                                   getConstraintsForCell(r, c, parent, cols).getWidth());
-            }
-            for (int r = 0; r < rows; r++) {
-                SpringLayout.Constraints constraints =
-                        getConstraintsForCell(r, c, parent, cols);
-                constraints.setX(x);
-                constraints.setWidth(width);
-            }
-            x = Spring.sum(x, Spring.sum(width, Spring.constant(padX)));
-        }
+        Spring x = getSpringX(parent, rows, cols, initialX, padX);
 
         //Align all cells in each row and make them the same height.
+        Spring y = getSpringY(parent, rows, cols, initialY, padY);
+
+        //Set the parent's size.
+        SpringLayout.Constraints parentCons = layout.getConstraints(parent);
+        parentCons.setConstraint(SpringLayout.SOUTH, y);
+        parentCons.setConstraint(SpringLayout.EAST, x);
+    }
+
+    private static Spring getSpringY(Container parent, int rows, int cols, int initialY, int padY) {
         Spring y = Spring.constant(initialY);
         for (int r = 0; r < rows; r++) {
             Spring height = Spring.constant(0);
@@ -211,10 +209,25 @@ public class SpringUtilities {
             }
             y = Spring.sum(y, Spring.sum(height, Spring.constant(padY)));
         }
+        return y;
+    }
 
-        //Set the parent's size.
-        SpringLayout.Constraints parentCons = layout.getConstraints(parent);
-        parentCons.setConstraint(SpringLayout.SOUTH, y);
-        parentCons.setConstraint(SpringLayout.EAST, x);
+    private static Spring getSpringX(Container parent, int rows, int cols, int initialX, int padX) {
+        Spring x = Spring.constant(initialX);
+        for (int c = 0; c < cols; c++) {
+            Spring width = Spring.constant(0);
+            for (int r = 0; r < rows; r++) {
+                width = Spring.max(width,
+                                   getConstraintsForCell(r, c, parent, cols).getWidth());
+            }
+            for (int r = 0; r < rows; r++) {
+                SpringLayout.Constraints constraints =
+                        getConstraintsForCell(r, c, parent, cols);
+                constraints.setX(x);
+                constraints.setWidth(width);
+            }
+            x = Spring.sum(x, Spring.sum(width, Spring.constant(padX)));
+        }
+        return x;
     }
 }

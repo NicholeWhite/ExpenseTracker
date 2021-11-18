@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.text.*;
 
 
@@ -47,6 +49,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
 
     public MonthlyExpenseUI() {
+        super(new GridLayout(1, 0));
         init();
 
 
@@ -68,7 +71,14 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
         add(leftHalf);
         add(createAddressDisplay());
+
+
+        //creates JPANEL
+        TableUI.makeTableGUI(expenseList);
+
     }
+
+
 
     protected JComponent createButtons() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
@@ -122,29 +132,49 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             System.out.println(expenseList.viewExpenses());
             expenseSet = true;
             isCleared = false;
+            System.out.println("here");
             dataToTable();
+            System.out.println("here2");
         }
 
         updateDisplays();
+        TableUI.makeTableGUI(expenseList);
 
     }
 
 
     public void dataToTable() {
-        String[] columnNames = {"Expense",
-                "Description",
-                "Total Expenses"};
+//        String[] columnNames = {"Expense",
+//                "Description",
+//                "Total Expenses"};
+//
+//        Object[][] data = {
+//                {"Kathy", "Smith",},
+//                {"John", "Doe",},
+//                {"Sue", "Black",},
+//                {"Jane", "White",},
+//                {"Joe", "Brown",}
+//        };
+//
+//        JTable table = new JTable(data, columnNames);
+//
+//        table.setVisible(true);
+//        System.out.println(table);
+        TableModel dataModel = new AbstractTableModel() {
+            public int getColumnCount() {
+                return 10;
+            }
 
-        Object[][] data = {
-                {"Kathy", "Smith",},
-                {"John", "Doe",},
-                {"Sue", "Black",},
-                {"Jane", "White",},
-                {"Joe", "Brown",}
+            public int getRowCount() {
+                return 10;
+            }
+
+            public Object getValueAt(int row, int col) {
+                return new Integer(row * col);
+            }
         };
-
-        JTable table = new JTable(data, columnNames);
-        table.setVisible(true);
+        JTable table = new JTable(dataModel);
+        JScrollPane scrollpane = new JScrollPane(table);
     }
 
     // MODIFIES: this
@@ -381,6 +411,15 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
         //Associate label/field pairs, add everything,
         //and lay it out.
+        panelLayout(panel, labelStrings, labels, fields);
+        SpringUtilities.makeCompactGrid(panel, labelStrings.length, 2,
+                GAP, GAP, //init x,y
+                GAP, GAP / 2);//xpad, ypad
+        return panel;
+    }
+
+
+    private void panelLayout(JPanel panel, String[] labelStrings, JLabel[] labels, JComponent[] fields) {
         for (int i = 0; i < labelStrings.length; i++) {
             labels[i] = new JLabel(labelStrings[i],
                     JLabel.TRAILING);
@@ -391,17 +430,13 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             //Add listeners to each field.
             JTextField tf = null;
             if (fields[i] instanceof JSpinner) {
-                tf = getTextField((JSpinner)fields[i]);
+                tf = getTextField((JSpinner) fields[i]);
             } else {
-                tf = (JTextField)fields[i];
+                tf = (JTextField) fields[i];
             }
             tf.addActionListener(this);
             tf.addFocusListener(this);
         }
-        SpringUtilities.makeCompactGrid(panel, labelStrings.length, 2,
-                GAP, GAP, //init x,y
-                GAP, GAP / 2);//xpad, ypad
-        return panel;
     }
 
 
@@ -445,14 +480,21 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         //Create and set up the window.
         JFrame frame = new JFrame("TextInputDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+//        JFrame table = new JFrame("tableDemo");
+//        table.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         System.out.println("");
         //Add contents to the window.
         frame.add(new MonthlyExpenseUI());
+//        table.add(new TableUI());
 
 
         //Display the window.
         frame.pack();
         frame.setVisible(true);
+
+//        table.pack();
+//        table.setVisible(true);
 
 
     }
@@ -470,7 +512,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         }
 
         int n = JOptionPane.showConfirmDialog(null,
-                "Would you to continue where you left off?",
+                "Would you to continue the last save?",
                 "Load Previous Work ", JOptionPane.YES_NO_OPTION);
 
         if (n == 0) {
@@ -513,6 +555,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
                 //Turn off metal's use of bold fonts
                 UIManager.put("swing.boldMetal", Boolean.FALSE);
                 createAndShowGUI();
+
             }
         });
     }
