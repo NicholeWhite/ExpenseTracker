@@ -87,10 +87,6 @@ public class MonthlyTracker implements Writable {
         return monthlyExpenses;
     }
 
-    public String[] listDescriptions() {
-        return null;
-    }
-
     public String getMonth() {
         return this.month;
     }

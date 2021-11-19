@@ -74,7 +74,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
 
         //creates JPANEL
-        TableUI.makeTableGUI(expenseList);
+
 
     }
 
@@ -88,7 +88,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         button.setActionCommand("add");
         panel.add(button);
 
-        button = new JButton("Clear");
+        button = new JButton("Clear All");
         button.addActionListener(this);
         button.setActionCommand("clear");
         panel.add(button);
@@ -113,9 +113,12 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     public void actionPerformed(ActionEvent e) {
         if ("clear".equals(e.getActionCommand())) {
             expenseSet = false;
-            isCleared = true;
+            isCleared = false;
             expenseField.setText("");
             descriptionField.setText("");
+            expenseList = new MonthlyTracker();
+            TableUI.makeTableGUI(expenseList);
+
 
             //We can't just setText on the formatted text
             //field, since its value will remain set.
@@ -129,53 +132,21 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             }
             Expense expense = new Expense(Float.valueOf(expenseField.getText()), descriptionField.getText());
             expenseList.addExpense(expense);
-            System.out.println(expenseList.viewExpenses());
+
             expenseSet = true;
             isCleared = false;
-            System.out.println("here");
-            dataToTable();
-            System.out.println("here2");
+
+            expenseList.setMonth((String) monthSpinner.getValue());
+
+
+            TableUI.makeTableGUI(expenseList);
         }
 
         updateDisplays();
-        TableUI.makeTableGUI(expenseList);
+
 
     }
 
-
-    public void dataToTable() {
-//        String[] columnNames = {"Expense",
-//                "Description",
-//                "Total Expenses"};
-//
-//        Object[][] data = {
-//                {"Kathy", "Smith",},
-//                {"John", "Doe",},
-//                {"Sue", "Black",},
-//                {"Jane", "White",},
-//                {"Joe", "Brown",}
-//        };
-//
-//        JTable table = new JTable(data, columnNames);
-//
-//        table.setVisible(true);
-//        System.out.println(table);
-        TableModel dataModel = new AbstractTableModel() {
-            public int getColumnCount() {
-                return 10;
-            }
-
-            public int getRowCount() {
-                return 10;
-            }
-
-            public Object getValueAt(int row, int col) {
-                return new Integer(row * col);
-            }
-        };
-        JTable table = new JTable(dataModel);
-        JScrollPane scrollpane = new JScrollPane(table);
-    }
 
     // MODIFIES: this
     // EFFECTS: saves work to a file and opens a mesasage dialog show it was successful

@@ -55,16 +55,16 @@ public class TableUI extends JPanel {
     TableUI newContentPane;
 
     public TableUI(MonthlyTracker tracker) {
-        super(new GridLayout(1,0));
+        super(new GridLayout(1, 0));
 
 
-        Vector<String> columnNames = getCols(tracker);
+        String[] columnNames = getCols(tracker);
 
-        Vector<Vector<String>> data = getData(tracker);
+        Object[][] data = getData(tracker);
 
 
         final JTable table = new JTable(data, columnNames);
-        table.setPreferredScrollableViewportSize(new Dimension(500, 70));
+        table.setPreferredScrollableViewportSize(new Dimension(500, 400));
         table.setFillsViewportHeight(true);
 
         debugOption(table);
@@ -82,51 +82,25 @@ public class TableUI extends JPanel {
         header.setForeground(Color.WHITE);
     }
 
-    private Vector<String> getCols(MonthlyTracker tracker) {
-        Vector<String> columnNames = new Vector<>();
-        columnNames.add("Expense Amount");
-        columnNames.add("Description");
+    private String[] getCols(MonthlyTracker tracker) {
+        String[] columnNames = {"Expense Amount", "Description"};
+
         return columnNames;
     }
 
-    private Vector<Vector<String>> getData(MonthlyTracker tracker) {
+    private Object[][] getData(MonthlyTracker tracker) {
         List<Expense> expenses = tracker.getMonthlyExpenses();
-        int count = 0;
+        int row = 0;
+        Object[][] data = new Object[100][100];
 
-        Vector<String> str = new Vector<>();
+        for (Expense e : expenses) {
+            data[row][0] = String.valueOf(e.getAmount());
+            data[row][1] = e.getDescription();
+            row++;
 
-        Vector<String> amountList = new Vector<>();
-        Vector<String> descriptionList = new Vector<>();
-
-        Object[][] data = {
-        };
-        List<String> l = new ArrayList();
-        Vector<Vector<String>> dataVector = new Vector<Vector<String>>();
-        for (Expense e: expenses) {
-            System.out.println("  ");
-            str.add(e.getDescription());
-            amountList.add(String.valueOf(e.getAmount()));
-            descriptionList.add(e.getDescription());
-
-
-            //data.push(e.getAmount(),e.getDescription());
-        }
-        System.out.println(expenses);
-        System.out.println("111");
-        System.out.println(dataVector.toString());
-//        dataVector.add(amountList);
-//        dataVector.add(descriptionList);
-        dataVector.add(amountList);
-        System.out.println(dataVector.toString());
-        //dataVector.add(descriptionList);
-        return dataVector;
-    }
-
-    public void updateData(boolean bool) {
-        if (bool == true) {
-            repaint();
         }
 
+        return data;
     }
 
 
@@ -181,17 +155,4 @@ public class TableUI extends JPanel {
     }
 
 
-
-
-
-//    public static void main(String[] args) {
-//        //Schedule a job for the event-dispatching thread:
-//        //creating and showing this application's GUI.
-//        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-//
-//
-//            }
-//        });
-//    }
 }
