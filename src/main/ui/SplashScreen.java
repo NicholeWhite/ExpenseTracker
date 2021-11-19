@@ -14,7 +14,7 @@ import javax.swing.border.EtchedBorder;
 class SplashScreen extends JWindow {
     static JProgressBar progressBar = new JProgressBar();
     static int count = 1;
-    static int TIMER_PAUSE = 5;
+    static int TIMER_PAUSE = 3;
     static int PROGBAR_MAX = 100;
     static Timer progressBarTimer;
     ActionListener al = new ActionListener() {
@@ -58,7 +58,7 @@ class SplashScreen extends JWindow {
     //EFFECTS: creates and shows a JFrame
     private void createAndShowFrame() {
         JFrame frame = new JFrame();
-        frame.setSize(500, 500);
+        frame.setSize(600, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(false);
     }

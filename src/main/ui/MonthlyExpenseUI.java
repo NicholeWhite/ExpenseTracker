@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.logging.Handler;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -421,14 +422,11 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     // Loads image and sets it to be the app icon
     private static void createAndShowGUI() {
         //Create and set up the window.
-        SplashScreen splashScreen = new SplashScreen();
 
-        System.out.println("aaa");
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+
+
+
 
         JFrame frame = new JFrame("Expense Tracker");
 
@@ -444,6 +442,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         frame.setIconImage(img.getImage());
 
         frame.add(new MonthlyExpenseUI());
+
 
         //Display the window.
         frame.pack();
@@ -506,6 +505,24 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
                 //Turn off metal's use of bold fonts
                 UIManager.put("swing.boldMetal", Boolean.FALSE);
+
+                ActionListener taskPerformer = new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        SplashScreen splashScreen = new SplashScreen();
+                    }
+                };
+
+                Timer timer = new Timer(100, taskPerformer);
+                timer.setRepeats(false);
+                timer.start();
+
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
                 createAndShowGUI();
 
             }
