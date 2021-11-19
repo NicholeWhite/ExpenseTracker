@@ -11,7 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 import javax.swing.*;
-import javax.swing.text.*;
+import com.apple.eawt.Application;
+import javax.swing.*;
 
 
 /**
@@ -429,6 +430,10 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
         //Sets icon image
         frame.setIconImage(img.getImage());
+
+        //Sets dock icon image
+        Icon s = new Icon();
+        s.setVisible(true);
 
         frame.add(new MonthlyExpenseUI());
 
