@@ -48,6 +48,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class TableUI extends JPanel {
     private boolean debug = false;
@@ -57,9 +58,9 @@ public class TableUI extends JPanel {
         super(new GridLayout(1,0));
 
 
-        String[] columnNames = getCols(tracker);
+        Vector<String> columnNames = getCols(tracker);
 
-        Object[][] data = getData(tracker);
+        Vector<Vector<String>> data = getData(tracker);
 
 
         final JTable table = new JTable(data, columnNames);
@@ -81,35 +82,44 @@ public class TableUI extends JPanel {
         header.setForeground(Color.WHITE);
     }
 
-    private String[] getCols(MonthlyTracker tracker) {
-        String[] columnNames = {"Expense Amount",
-                "Description"};
+    private Vector<String> getCols(MonthlyTracker tracker) {
+        Vector<String> columnNames = new Vector<>();
+        columnNames.add("Expense Amount");
+        columnNames.add("Description");
         return columnNames;
     }
 
-    private Object[][] getData(MonthlyTracker tracker) {
+    private Vector<Vector<String>> getData(MonthlyTracker tracker) {
         List<Expense> expenses = tracker.getMonthlyExpenses();
         int count = 0;
 
-        List<String> amountList = new ArrayList<>();
-        List<String> descriptionList = new ArrayList<>();
+        Vector<String> str = new Vector<>();
+
+        Vector<String> amountList = new Vector<>();
+        Vector<String> descriptionList = new Vector<>();
 
         Object[][] data = {
         };
         List<String> l = new ArrayList();
-
+        Vector<Vector<String>> dataVector = new Vector<Vector<String>>();
         for (Expense e: expenses) {
             System.out.println("  ");
-
+            str.add(e.getDescription());
             amountList.add(String.valueOf(e.getAmount()));
             descriptionList.add(e.getDescription());
+
 
             //data.push(e.getAmount(),e.getDescription());
         }
         System.out.println(expenses);
         System.out.println("111");
-
-        return data;
+        System.out.println(dataVector.toString());
+//        dataVector.add(amountList);
+//        dataVector.add(descriptionList);
+        dataVector.add(amountList);
+        System.out.println(dataVector.toString());
+        //dataVector.add(descriptionList);
+        return dataVector;
     }
 
     public void updateData(boolean bool) {
