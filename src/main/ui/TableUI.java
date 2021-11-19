@@ -50,31 +50,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+//Creates a new JTable that displays the expense data
 public class TableUI extends JPanel {
-    private boolean debug = false;
-    TableUI newContentPane;
 
+    //EFFECTS: constructor that
     public TableUI(MonthlyTracker tracker) {
         super(new GridLayout(1, 0));
 
-
         String[] columnNames = getCols(tracker);
-
         Object[][] data = getData(tracker);
-
 
         final JTable table = new JTable(data, columnNames);
         table.setPreferredScrollableViewportSize(new Dimension(500, 400));
         table.setFillsViewportHeight(true);
-
-        debugOption(table);
 
         //Create the scroll pane and add the table to it.
         JScrollPane scrollPane = new JScrollPane(table);
 
         //Add the scroll pane to this panel.
         add(scrollPane);
-
 
         // https://stackoverflow.com/questions/2297991/how-to-set-header-for-jtable
         JTableHeader header = table.getTableHeader();
@@ -104,31 +98,6 @@ public class TableUI extends JPanel {
     }
 
 
-    private void debugOption(JTable table) {
-        if (debug) {
-            table.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
-                    printDebugData(table);
-                }
-            });
-        }
-    }
-
-    private void printDebugData(JTable table) {
-        int numRows = table.getRowCount();
-        int numCols = table.getColumnCount();
-        javax.swing.table.TableModel model = table.getModel();
-
-        System.out.println("Value of data: ");
-        for (int i = 0; i < numRows; i++) {
-            System.out.print("    row " + i + ":");
-            for (int j = 0; j < numCols; j++) {
-                System.out.print("  " + model.getValueAt(i, j));
-            }
-            System.out.println();
-        }
-        System.out.println("--------------------------");
-    }
 
     /**
      * Create the GUI and show it.  For thread safety,

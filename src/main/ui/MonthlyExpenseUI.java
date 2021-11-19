@@ -11,8 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
 import javax.swing.text.*;
 
 
@@ -28,21 +26,28 @@ import javax.swing.text.*;
  *
  *   Additionally, the dataToTable() function uses the JTable for the data table:
  *   https://docs.oracle.com/javase/tutorial/uiswing/components/table.html
+ *
+ *   Icon reference from:
+ *   https://stackoverflow.com/questions/1614772/how-to-change-jframe-icon
+ *   and for resizing:
+ *   http://www.nullpointer.at/2011/08/21/java-code-snippets-howto-resize-an-imageicon/#comment-11870
+ *
+ *   Icon from:
+ * https://www.flaticon.com/free-icon/coin_217853
  */
+
+// Class represents the main interactive UI for this project, allows user add, clear, save and load expense.
 public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusListener {
     private static final String JSON_STORE = "./data/expenseListData.json";
     JTextField expenseField;
     JTextField descriptionField;
-    //JFormattedTextField zipField;
     JSpinner monthSpinner;
     boolean expenseSet = false;
-    boolean isCleared = false;
     Font regularFont;
     Font italicFont;
-    JLabel addressDisplay;
+    JLabel messageDisplay;
     static final int GAP = 10;
     private MonthlyTracker expenseList;
-    private Expense expense;
     private Scanner input;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
@@ -70,7 +75,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
 
         add(leftHalf);
-        add(createAddressDisplay());
+        add(createMessageDisplay());
 
 
         //creates JPANEL
@@ -99,7 +104,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         panel.add(button);
 
 
-
         //Match the SpringLayout's gap, subtracting 5 to make
         //up for the default gap FlowLayout provides.
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, GAP - 5,  GAP - 5));
@@ -107,22 +111,18 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     }
 
     /**
-     * Called when the user clicks the button or presses
-     * Enter in a text field.
+     * MODIFIES: this TableUI
+     * EFFECTS: Called when the user clicks the button or presses enter in the text field
+     * Options are to clear all expenses, save expenses to file, or adds the entry expense
      */
     public void actionPerformed(ActionEvent e) {
         if ("clear".equals(e.getActionCommand())) {
             expenseSet = false;
-            isCleared = false;
+
             expenseField.setText("");
             descriptionField.setText("");
             expenseList = new MonthlyTracker();
             TableUI.makeTableGUI(expenseList);
-
-
-            //We can't just setText on the formatted text
-            //field, since its value will remain set.
-            //zipField.setValue(null);
 
         } else if ("save".equals(e.getActionCommand())) {
             saveToFile();
@@ -132,13 +132,10 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             }
             Expense expense = new Expense(Float.valueOf(expenseField.getText()), descriptionField.getText());
             expenseList.addExpense(expense);
-
-            expenseSet = true;
-            isCleared = false;
-
             expenseList.setMonth((String) monthSpinner.getValue());
+            expenseSet = true;
 
-
+            // Generates a new instance of the table GUI each time an expense is added
             TableUI.makeTableGUI(expenseList);
         }
 
@@ -148,9 +145,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     }
 
 
-    // MODIFIES: this
     // EFFECTS: saves work to a file and opens a mesasage dialog show it was successful
-    //
     public void saveToFile() {
         try {
             jsonWriter.open();
@@ -168,8 +163,8 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     // EFFECTS: returns false if the expense or description is not valid, true otherwise
     public boolean checkValid(JTextField expense, JTextField description) {
         String validExpense = isValidExpense(expense);
-        if (validExpense != "") {
 
+        if (validExpense != "") {
             JOptionPane.showMessageDialog(null,
                     validExpense, "Error!", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -177,7 +172,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
         String validDescription = isValidDescription(description);
         if (validDescription != "") {
-
             JOptionPane.showMessageDialog(null,
                     validDescription, "Error!", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -190,6 +184,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     // invalid if negative, non-number, or 0 in value
     public String isValidExpense(JTextField expense) {
         String errorMessage = "";
+
         try {
             Float.parseFloat(expense.getText());
             float val = Float.parseFloat(expense.getText());
@@ -199,7 +194,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             } else if (val == 0) {
                 errorMessage = "Expense must not be zero";
             }
-
         } catch (NumberFormatException ex) {
             errorMessage = "Expense must be a valid number ";
         }
@@ -211,8 +205,8 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     // invalid if negative, non-number, or 0 in value
     public String isValidDescription(JTextField description) {
         String errorMessage = "";
-
         String empty = "";
+
         if (description.getText().matches(".*\\d.*")) {
             errorMessage = "Description must not contain numbers";
         }
@@ -220,24 +214,28 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         if ((description.getText() == null) || empty.equals(description.getText()))  {
             errorMessage = "Description must not be empty";
         }
-
         return errorMessage;
     }
 
+
+    //MODIFIES: this
+    //EFFECTS: updates the message displayed on the UI
     protected void updateDisplays() {
-        addressDisplay.setText(formatAddress());
+        messageDisplay.setText(formatMessage());
         if (expenseSet) {
-            addressDisplay.setFont(regularFont);
+            messageDisplay.setFont(regularFont);
         } else {
-            addressDisplay.setFont(italicFont);
+            messageDisplay.setFont(italicFont);
         }
     }
 
-    protected JComponent createAddressDisplay() {
+    //MODIFIES: this
+    //EFFECTS: formats a message to be displayed on the UI and updatesDisplays when called
+    protected JComponent createMessageDisplay() {
         JPanel panel = new JPanel(new BorderLayout());
-        addressDisplay = new JLabel();
-        addressDisplay.setHorizontalAlignment(JLabel.CENTER);
-        regularFont = addressDisplay.getFont().deriveFont(Font.PLAIN,
+        messageDisplay = new JLabel();
+        messageDisplay.setHorizontalAlignment(JLabel.CENTER);
+        regularFont = messageDisplay.getFont().deriveFont(Font.PLAIN,
                 16.0f);
         italicFont = regularFont.deriveFont(Font.ITALIC);
         updateDisplays();
@@ -249,29 +247,25 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
                 0));   //right
         panel.add(new JSeparator(JSeparator.VERTICAL),
                 BorderLayout.LINE_START);
-        panel.add(addressDisplay,
+        panel.add(messageDisplay,
                 BorderLayout.CENTER);
         panel.setPreferredSize(new Dimension(200, 150));
 
         return panel;
     }
 
-    protected String formatAddress() {
+    //EFFECTS: Formats a message with the expense, description , and month printed for the user to
+    // see. If expense is not set, then prints "No Expenses Added.
+    protected String formatMessage() {
         if (!expenseSet) {
-            if (isCleared) {
-                return " ";
-            }
             return "No Expenses Added.";
         }
-
-
 
         String expense = expenseField.getText();
         String description = descriptionField.getText();
         String month = (String) monthSpinner.getValue();
 
         String empty = "";
-
 
         if ((expense == null) || empty.equals(expense)) {
             expense = "<em>(no expense specified)</em>";
@@ -282,8 +276,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         if ((month == null) || empty.equals(month)) {
             month = "<em>(no month specified)</em>";
         }
-
-
         String sb = stringBufferHelper(expense, description, month);
 
         return sb;
@@ -348,7 +340,8 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     //Needed for FocusListener interface.
     public void focusLost(FocusEvent e) { } //ignore
 
-
+    //MODIFIES: this
+    //REQUIRES
     protected JComponent createEntryFields() {
         JPanel panel = new JPanel(new SpringLayout());
 
@@ -356,7 +349,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
                 "Expense: ",
                 "Description: ",
                 "Month: ",
-              //  "Zip code: "
         };
 
         JLabel[] labels = new JLabel[labelStrings.length];
@@ -376,10 +368,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         monthSpinner = new JSpinner(new SpinnerListModel(stateStrings));
         fields[fieldNum++] = monthSpinner;
 
-        //Field = new JFormattedTextField(
-               // createFormatter("#####"));
-        //fields[fieldNum++] = zipField;
-
         //Associate label/field pairs, add everything,
         //and lay it out.
         panelLayout(panel, labelStrings, labels, fields);
@@ -389,7 +377,9 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         return panel;
     }
 
-
+    //MODIFIES: this
+    //EFFECTS: adds labels to the panel and adds listeners to each field
+    //Associate label/field pairs, add everything, and lay it out.
     private void panelLayout(JPanel panel, String[] labelStrings, JLabel[] labels, JComponent[] fields) {
         for (int i = 0; i < labelStrings.length; i++) {
             labels[i] = new JLabel(labelStrings[i],
@@ -429,6 +419,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         return month;
     }
 
+    //EFFECTS: returns the text field that the spinner is associated to, in this case the month
     public JFormattedTextField getTextField(JSpinner spinner) {
         JComponent editor = spinner.getEditor();
         if (editor instanceof JSpinner.DefaultEditor) {
@@ -441,32 +432,28 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         }
     }
 
-    /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event dispatch thread.
-     */
-    private static void createAndShowGUI() {
 
+    // EFFECTS: Create the GUI and sets it to be visible.
+    // Loads image and sets it to be the app icon
+    private static void createAndShowGUI() {
         //Create and set up the window.
         JFrame frame = new JFrame("TextInputDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-//        JFrame table = new JFrame("tableDemo");
-//        table.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        System.out.println("");
-        //Add contents to the window.
-        frame.add(new MonthlyExpenseUI());
-//        table.add(new TableUI());
+        //Resizes icon image
+        ImageIcon img = new ImageIcon("data/coin.png");
+        Image image = img.getImage(); // transform it
+        Image newimg = image.getScaledInstance(110, 120,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        img = new ImageIcon(newimg);
 
+        //Sets icon image
+        frame.setIconImage(img.getImage());
+
+        frame.add(new MonthlyExpenseUI());
 
         //Display the window.
         frame.pack();
         frame.setVisible(true);
-
-//        table.pack();
-//        table.setVisible(true);
-
 
     }
 
@@ -489,7 +476,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         if (n == 0) {
             try {
                 expenseList = jsonReader.read();
-                isCleared = true;
+
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null,
                         "Error loading file...", "Error! ", JOptionPane.ERROR_MESSAGE);
@@ -510,17 +497,17 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         jsonReader = new JsonReader(JSON_STORE);
 
         loadPrevious();
-        System.out.println(expenseList.viewExpenses());
 
     }
 
 
-
+    //EFFECTS: main function that is called and generates the UI
     public static void main(String[] args) {
-
         //Schedule a job for the event dispatch thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
+
+            //EFFECTS: runs program and generates UI
             public void run() {
 
                 //Turn off metal's use of bold fonts
