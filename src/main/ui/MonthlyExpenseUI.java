@@ -7,11 +7,12 @@ import persistence.JsonWriter;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
-import javax.swing.*;
-import com.apple.eawt.Application;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
@@ -57,6 +58,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     // adds the fields to the panel
     public MonthlyExpenseUI() {
         super(new GridLayout(1, 0));
+
         init();
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
@@ -419,7 +421,17 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     // Loads image and sets it to be the app icon
     private static void createAndShowGUI() {
         //Create and set up the window.
-        JFrame frame = new JFrame("TextInputDemo");
+        SplashScreen splashScreen = new SplashScreen();
+
+        System.out.println("aaa");
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        JFrame frame = new JFrame("Expense Tracker");
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Resizes icon image
@@ -430,10 +442,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
         //Sets icon image
         frame.setIconImage(img.getImage());
-
-        //Sets dock icon image
-        Icon s = new Icon();
-        s.setVisible(true);
 
         frame.add(new MonthlyExpenseUI());
 
