@@ -1,8 +1,6 @@
 package ui;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -36,11 +34,13 @@ class SplashScreen extends JWindow {
         Container container = getContentPane();
 
         JPanel panel = new JPanel();
-        panel.setBorder(new EtchedBorder());
+        //panel.setBorder(new EtchedBorder());
         container.add(panel, BorderLayout.CENTER);
 
-        panel.add(new JLabel(new ImageIcon("data/coin.png")));
-//
+        panel.add(new JLabel(new ImageIcon("data/money.png")));
+        panel.setSize(100,100);
+        panel.setMaximumSize(new Dimension(10,10));
+
         progressBar.setMaximum(PROGBAR_MAX);
         container.add(progressBar, BorderLayout.SOUTH);
         pack();

@@ -7,13 +7,9 @@ import persistence.JsonWriter;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.logging.Handler;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
@@ -37,6 +33,11 @@ import javax.swing.*;
  *
  *   Icon from:
  * https://www.flaticon.com/free-icon/coin_217853
+ * and
+ * https://pixabay.com/vectors/money-cash-coin-dollars-usd-gold-5698019/
+ *
+ * The timer component is referenced from:
+ * https://stackoverflow.com/questions/1006611/java-swing-timer
  */
 
 // Class represents the main interactive UI for this project, allows user add, clear, save and load expense.
@@ -423,11 +424,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     private static void createAndShowGUI() {
         //Create and set up the window.
 
-
-
-
-
-
         JFrame frame = new JFrame("Expense Tracker");
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -442,7 +438,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         frame.setIconImage(img.getImage());
 
         frame.add(new MonthlyExpenseUI());
-
 
         //Display the window.
         frame.pack();
@@ -500,7 +495,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
-            //EFFECTS: runs program and generates UI
+            //EFFECTS: runs program and generates UI, sets a timer between the two panel components
             public void run() {
 
                 //Turn off metal's use of bold fonts
@@ -512,18 +507,19 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
                     }
                 };
 
-                Timer timer = new Timer(100, taskPerformer);
-                timer.setRepeats(false);
-                timer.start();
+                Timer splashTimer = new Timer(50, taskPerformer);
+                splashTimer.setRepeats(false);
+                splashTimer.start();
 
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                ActionListener timerForGUI = new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        createAndShowGUI();
+                    }
+                };
 
-
-                createAndShowGUI();
+                Timer guiTimer = new Timer(3000, timerForGUI);
+                guiTimer.setRepeats(false);
+                guiTimer.start();
 
             }
         });
