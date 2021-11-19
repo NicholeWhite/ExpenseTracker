@@ -26,18 +26,18 @@ import javax.swing.*;
  *   Additionally, the dataToTable() function uses the JTable for the data table:
  *   https://docs.oracle.com/javase/tutorial/uiswing/components/table.html
  *
- *   Icon reference from:
+ *   Icon use reference from:
  *   https://stackoverflow.com/questions/1614772/how-to-change-jframe-icon
  *   and for resizing:
  *   http://www.nullpointer.at/2011/08/21/java-code-snippets-howto-resize-an-imageicon/#comment-11870
  *
  *   Icon from:
- * https://www.flaticon.com/free-icon/coin_217853
- * and
- * https://pixabay.com/vectors/money-cash-coin-dollars-usd-gold-5698019/
+ *   https://www.flaticon.com/free-icon/coin_217853
+ *   and
+ *   https://pixabay.com/vectors/money-cash-coin-dollars-usd-gold-5698019/
  *
- * The timer component is referenced from:
- * https://stackoverflow.com/questions/1006611/java-swing-timer
+ *   The timer component is referenced from:
+ *   https://stackoverflow.com/questions/1006611/java-swing-timer
  */
 
 // Class represents the main interactive UI for this project, allows user add, clear, save and load expense.

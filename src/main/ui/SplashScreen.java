@@ -34,12 +34,9 @@ class SplashScreen extends JWindow {
         Container container = getContentPane();
 
         JPanel panel = new JPanel();
-        //panel.setBorder(new EtchedBorder());
         container.add(panel, BorderLayout.CENTER);
 
         panel.add(new JLabel(new ImageIcon("data/money.png")));
-        panel.setSize(100,100);
-        panel.setMaximumSize(new Dimension(10,10));
 
         progressBar.setMaximum(PROGBAR_MAX);
         container.add(progressBar, BorderLayout.SOUTH);
