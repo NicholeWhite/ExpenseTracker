@@ -46,6 +46,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TableUI extends JPanel {
@@ -70,7 +71,7 @@ public class TableUI extends JPanel {
         //Create the scroll pane and add the table to it.
         JScrollPane scrollPane = new JScrollPane(table);
 
-        //Add the scroll panwe to this panel.
+        //Add the scroll pane to this panel.
         add(scrollPane);
 
 
@@ -88,16 +89,26 @@ public class TableUI extends JPanel {
 
     private Object[][] getData(MonthlyTracker tracker) {
         List<Expense> expenses = tracker.getMonthlyExpenses();
+        int count = 0;
+
+        List<String> amountList = new ArrayList<>();
+        List<String> descriptionList = new ArrayList<>();
+
+        Object[][] data = {
+        };
+        List<String> l = new ArrayList();
+
+        for (Expense e: expenses) {
+            System.out.println("  ");
+
+            amountList.add(String.valueOf(e.getAmount()));
+            descriptionList.add(e.getDescription());
+
+            //data.push(e.getAmount(),e.getDescription());
+        }
         System.out.println(expenses);
         System.out.println("111");
 
-
-        Object[][] data = {
-                {"Kathy", "Smith"},
-                {"Sue", "Black"},
-                {"Jane", "White"},
-                {"Joe", "Brown"}
-        };
         return data;
     }
 
@@ -148,7 +159,7 @@ public class TableUI extends JPanel {
         //Create and set up the content pane.
         TableUI newContentPane = new TableUI(month);
         newContentPane.setOpaque(true); //content panes must be opaque
-
+        newContentPane.revalidate();
 
 
         frame.setContentPane(newContentPane);
@@ -159,9 +170,7 @@ public class TableUI extends JPanel {
 
     }
 
-    public static void updatePane(boolean bool) {
-        newContentPane.revalidate();
-    }
+
 
 
 

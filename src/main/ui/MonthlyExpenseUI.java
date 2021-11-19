@@ -102,7 +102,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
         //Match the SpringLayout's gap, subtracting 5 to make
         //up for the default gap FlowLayout provides.
-        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, GAP - 5,  GAP - 5));
+        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, GAP + 500,  GAP - 5));
         return panel;
     }
 
