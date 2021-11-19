@@ -52,11 +52,11 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
 
-
+    //EFFECTS: Class constructor that calls the initializer and sets the dimensions for the panel
+    // adds the fields to the panel
     public MonthlyExpenseUI() {
         super(new GridLayout(1, 0));
         init();
-
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
@@ -73,18 +73,14 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         leftHalf.add(createEntryFields());
         leftHalf.add(createButtons());
 
-
         add(leftHalf);
         add(createMessageDisplay());
-
-
-        //creates JPANEL
-
 
     }
 
 
-
+    //EFFECTS: Creates interactive buttons for the JPanel and returns the panel
+    // with the buttons added
     protected JComponent createButtons() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 
@@ -103,7 +99,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         button.setActionCommand("save");
         panel.add(button);
 
-
         //Match the SpringLayout's gap, subtracting 5 to make
         //up for the default gap FlowLayout provides.
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, GAP - 5,  GAP - 5));
@@ -111,9 +106,10 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     }
 
     /**
-     * MODIFIES: this TableUI
+     * MODIFIES: this, TableUI
      * EFFECTS: Called when the user clicks the button or presses enter in the text field
      * Options are to clear all expenses, save expenses to file, or adds the entry expense
+     * and displays it on the table GUI
      */
     public void actionPerformed(ActionEvent e) {
         if ("clear".equals(e.getActionCommand())) {
@@ -140,8 +136,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         }
 
         updateDisplays();
-
-
     }
 
 
@@ -230,7 +224,8 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     }
 
     //MODIFIES: this
-    //EFFECTS: formats a message to be displayed on the UI and updatesDisplays when called
+    //EFFECTS: arranges a panel layout for a message to be displayed on the UI
+    // and updatesDisplays when called
     protected JComponent createMessageDisplay() {
         JPanel panel = new JPanel(new BorderLayout());
         messageDisplay = new JLabel();
@@ -255,7 +250,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     }
 
     //EFFECTS: Formats a message with the expense, description , and month printed for the user to
-    // see. If expense is not set, then prints "No Expenses Added.
+    // see. If expense is not set, then prints "No Expenses Added."
     protected String formatMessage() {
         if (!expenseSet) {
             return "No Expenses Added.";
@@ -281,12 +276,13 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         return sb;
     }
 
+    //EFFECTS: string buffer helper that adds the format for the string that
+    // will be displayed on the UI when an expense is added
     protected String stringBufferHelper(String expense, String description, String month) {
         StringBuffer sb = new StringBuffer();
 
         sb.append("<html><p align=center>");
         sb.append("<em>Added Expense:");
-
         sb.append("<br>");
         sb.append("$");
         sb.append(expense);
@@ -294,28 +290,14 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         sb.append(description);
         sb.append(" ");
         sb.append("<br> To the month:");
-        sb.append(month); //should format
+        sb.append(month);
         sb.append(" ");
 
         return sb.toString();
     }
 
-    //A convenience method for creating a MaskFormatter.
-    protected MaskFormatter createFormatter(String s) {
-        MaskFormatter formatter = null;
-        try {
-            formatter = new MaskFormatter(s);
-        } catch (java.text.ParseException exc) {
-            System.err.println("formatter is bad: " + exc.getMessage());
-            System.exit(-1);
-        }
-        return formatter;
-    }
-
-    /**
-     * Called when one of the fields gets the focus so that
-     * we can select the focused field.
-     */
+     //EFFECTS: Called when one of the fields gets the focus so that
+     // we can select the focused field.
     public void focusGained(FocusEvent e) {
         Component c = e.getComponent();
         if (c instanceof JFormattedTextField) {
@@ -325,7 +307,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         }
     }
 
-    //Workaround for formatted text field focus side effects.
+    //EFFECTS: Workaround for formatted text field focus side effects.
     protected void selectItLater(Component c) {
         if (c instanceof JFormattedTextField) {
             final JFormattedTextField ftf = (JFormattedTextField)c;
@@ -337,11 +319,11 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         }
     }
 
-    //Needed for FocusListener interface.
+    //EFFECTS: Needed for FocusListener interface.
     public void focusLost(FocusEvent e) { } //ignore
 
     //MODIFIES: this
-    //REQUIRES
+    //REQUIRES: Creates the UI fields that the user can enter the data
     protected JComponent createEntryFields() {
         JPanel panel = new JPanel(new SpringLayout());
 
@@ -399,7 +381,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             tf.addFocusListener(this);
         }
     }
-
 
     // EFFECTS: Returns a string list of the months in the year
     public String[] getMonth() {

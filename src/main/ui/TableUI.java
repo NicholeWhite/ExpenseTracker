@@ -30,11 +30,6 @@ package ui;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-/*
- * TableUI.java requires no other files.
- */
-
 import model.Expense;
 import model.MonthlyTracker;
 
@@ -44,20 +39,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+
 
 //Creates a new JTable that displays the expense data
 public class TableUI extends JPanel {
 
-    //EFFECTS: constructor that
+    //EFFECTS: constructor that constructs the JTable with the desired data and adds a scroll
+    // pane to the table
     public TableUI(MonthlyTracker tracker) {
         super(new GridLayout(1, 0));
 
-        String[] columnNames = getCols(tracker);
+        String[] columnNames = getCols();
         Object[][] data = getData(tracker);
 
         final JTable table = new JTable(data, columnNames);
@@ -76,12 +69,15 @@ public class TableUI extends JPanel {
         header.setForeground(Color.WHITE);
     }
 
-    private String[] getCols(MonthlyTracker tracker) {
+    //EFFECTS: returns the string array representation of the column header names
+    private String[] getCols() {
         String[] columnNames = {"Expense Amount", "Description"};
 
         return columnNames;
     }
 
+    //EFFECTS: Returns a multidimensional array representing the amount and
+    // description of the expense
     private Object[][] getData(MonthlyTracker tracker) {
         List<Expense> expenses = tracker.getMonthlyExpenses();
         int row = 0;
@@ -93,14 +89,11 @@ public class TableUI extends JPanel {
             row++;
 
         }
-
         return data;
     }
 
-
-
     /**
-     * Create the GUI and show it.  For thread safety,
+     * EFFECTS: Create the GUI and show it.  For thread safety,
      * this method should be invoked from the
      * event-dispatching thread.
      */
