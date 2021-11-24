@@ -5,6 +5,8 @@ import org.json.JSONObject;
 import persistence.Writable;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 // Represents a list of expenses, with each expense having an associated value (in dollars) and description
@@ -14,10 +16,12 @@ public class MonthlyTracker implements Writable {
     private String month;
 
     // EFFECTS: Constructor that creates an empty array list, sets the size to 0, and has a blank month;
+    // clears event log
     public MonthlyTracker() {
         this.monthlyExpenses = new ArrayList<>();
         this.size = 0;
         this.month = "";
+       // EventLog.getInstance().clear();
     }
 
     // EFFECTS: Constructor that creates an empty array list, sets the size to 0 and specifies a month;
@@ -28,15 +32,23 @@ public class MonthlyTracker implements Writable {
     }
 
     // MODIFIES: this
-    // EFFECTS: Adds the expense to the back of the array list and increases size of list by 1
+    // EFFECTS: Adds the expense to the back of the array list and increases size of list by 1, and logs action
     public void addExpense(Expense e) {
         this.monthlyExpenses.add(e);
         size++;
         EventLog.getInstance().logEvent(new Event("Expense Added: " + e.getAmount() + ", " + e.getType()));
+
+    }
+
+    //EFFECTS: Logs expenses in monthlyExpenses
+    public void logExpenses() {
+        for (Expense e: monthlyExpenses) {
+            EventLog.getInstance().logEvent(new Event("Last Session Expenses: " + e.getAmount() + ", " + e.getType()));
+        }
     }
 
     // MODIFIES: this
-    // EFFECTS: removes the expense from the list and decreases size by 1, does
+    // EFFECTS: removes the expense from the list and decreases size by 1 and logs action, does
     //          nothing if exact expense is not found in list
     public void removeExpense(Expense e) {
         for (Expense ex: monthlyExpenses) {
@@ -50,7 +62,7 @@ public class MonthlyTracker implements Writable {
     }
 
     // MODIFIES: this
-    // EFFECTS: Clears all expenses
+    // EFFECTS: Clears all expenses and logs the action
     public void clearAll() {
         this.monthlyExpenses = new ArrayList<>();
         this.size = 0;
@@ -60,7 +72,7 @@ public class MonthlyTracker implements Writable {
     }
 
 
-    // EFFECTS: returns the sum of the expenses in monthlyExpenses, 0 if
+    // EFFECTS: returns the sum of the expenses in monthlyExpenses and logs it, 0 if
     //          the list is empty
     public float sumExpenses() {
         float expenseSum = 0;
@@ -74,7 +86,7 @@ public class MonthlyTracker implements Writable {
 
     // REQUIRES: monthlyExpenses has > 0 expenses
     // EFFECTS: adds each expense in monthlyExpenses to monthlyExpenseList
-    //          returns the list of expenses as a list of strings
+    //          returns the list of expenses as a list of strings and logs it
     public List<String> viewExpenses() {
         List<String> monthlyExpenseList = new ArrayList<>();
         for (Expense e: monthlyExpenses) {
@@ -83,6 +95,11 @@ public class MonthlyTracker implements Writable {
 
         EventLog.getInstance().logEvent(new Event("Listed Expenses: " + monthlyExpenseList));
         return monthlyExpenseList;
+    }
+
+    //EFFECTS: Creates an event log entry when a previous file is loaded
+    public void load() {
+        EventLog.getInstance().logEvent(new Event("Loaded Expenses."));
     }
 
     // EFFECTS: returns true if the monthlyExpenses list is empty, false otherwise
@@ -107,7 +124,8 @@ public class MonthlyTracker implements Writable {
         return this.month;
     }
 
-
+    //MODIFIES: this
+    //EFFECTS: sets this month and logs it
     public void setMonth(String month) {
         this.month = month;
         EventLog.getInstance().logEvent(new Event("Month Set: " + month));

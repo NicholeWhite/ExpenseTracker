@@ -5,15 +5,17 @@ import model.EventLog;
 import model.MonthlyTracker;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
- * Represents a screen printer for printing event log to screen.
+ * Code in this class is retrieved from:
+ * https://github.students.cs.ubc.ca/CPSC210/AlarmSystem
  *
  * Window closing from:
  * https://stackoverflow.com/questions/7613577/java-how-do-i-prevent-windowclosing-from-actually-closing-the-window
+ *
+ * Represents a screen printer for printing event log to screen.
  */
 public class ScreenPrinter extends JInternalFrame implements LogPrinter {
     private static final int WIDTH = 400;
@@ -22,7 +24,6 @@ public class ScreenPrinter extends JInternalFrame implements LogPrinter {
 	
 	/**
 	 * Constructor sets up window in which log will be printed on screen
-	 * @param parent  the parent component
 	 */
     public ScreenPrinter() {
 
@@ -30,7 +31,6 @@ public class ScreenPrinter extends JInternalFrame implements LogPrinter {
 
         JFrame frame = new JFrame("Event Log");
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent ev) {
                 frame.dispose();
@@ -65,6 +65,14 @@ public class ScreenPrinter extends JInternalFrame implements LogPrinter {
         for (Event next : el) {
             System.out.println(next);
         }
+        el.clear();
+
+    }
+
+    @Override
+    public void clearLog(EventLog el) {
+        el.clear();
+
     }
 
 

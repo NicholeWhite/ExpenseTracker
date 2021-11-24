@@ -1,6 +1,7 @@
 package ui;
 
 import exception.LogException;
+import model.Event;
 import model.EventLog;
 import model.Expense;
 import model.MonthlyTracker;
@@ -9,9 +10,7 @@ import persistence.JsonWriter;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 import javax.swing.*;
@@ -44,6 +43,11 @@ import javax.swing.*;
  *   https://stackoverflow.com/questions/1006611/java-swing-timer
  *
  *   Button Panel can be attributed to:
+ *   https://github.students.cs.ubc.ca/CPSC210/AlarmSystem
+ *
+ *   Scroll panels based on:
+ *   https://docs.oracle.com/javase/tutorial/uiswing/components/scrollpane.html
+ *
  */
 
 // Class represents the main interactive UI for this project, allows user add, clear, save and load expense.
@@ -61,11 +65,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     private Scanner input;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
-
-    private JComboBox<String> printCombo;
-    private static final String FILE_DESCRIPTOR = "...file";
-    private JDesktopPane desktop;
-    private static final String SCREEN_DESCRIPTOR = "...screen";
     LogPrinter lp;
 
     //EFFECTS: Class constructor that calls the initializer and sets the dimensions for the panel
@@ -74,10 +73,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         super(new GridLayout(1, 0));
 
         init();
-
-
-
-        //desktop.addMouseListener(new DesktopFocusAction());
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
@@ -108,8 +103,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(2,2));
 
-
-
         JButton button = new JButton("Add Expense");
         button.addActionListener(this);
         button.setActionCommand("add");
@@ -131,8 +124,6 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         buttonPanel.add(button);
         panel.add(buttonPanel);
 
-
-
         //Match the SpringLayout's gap, subtracting 5 to make
         //up for the default gap FlowLayout provides.
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, GAP - 5,  GAP - 5));
@@ -149,25 +140,23 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     public void actionPerformed(ActionEvent e) {
         if ("clear".equals(e.getActionCommand())) {
             expenseSet = false;
-
             expenseField.setText("");
             descriptionField.setText("");
             expenseList.clearAll();
             TableUI.makeTableGUI(expenseList);
 
-
-
         } else if ("save".equals(e.getActionCommand())) {
             saveToFile();
         } else if ("print".equals(e.getActionCommand())) {
-            createPrintCombo();
+
             doAction();
-        } else {
+        } else if ("add".equals(e.getActionCommand())) {
             if (checkValid(expenseField, descriptionField) != true) {
                 return;
             }
             Expense expense = new Expense(Float.valueOf(expenseField.getText()), descriptionField.getText());
             expenseList.addExpense(expense);
+
             expenseList.setMonth((String) monthSpinner.getValue());
             expenseSet = true;
 
@@ -176,34 +165,23 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         }
 
         updateDisplays();
-       //doAction(e);
     }
 
-    //Effects
+    //Modifies: this, LogPrinter
+    //Effects: Logs the entries into the LogPrinter
     public void doAction() {
-
         try {
             lp = new ScreenPrinter();
             lp.printLog(EventLog.getInstance());
+
         } catch (LogException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "System Error",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    /**
-     * Helper to create print options combo box
-     * @return  the combo box
-     */
-    private JComboBox<String> createPrintCombo() {
-        printCombo = new JComboBox<String>();
-        printCombo.addItem(FILE_DESCRIPTOR);
-        printCombo.addItem(SCREEN_DESCRIPTOR);
-        return printCombo;
-    }
 
-
-    // EFFECTS: saves work to a file and opens a mesasage dialog show it was successful
+    // EFFECTS: saves work to a file and opens a message dialog show it was successful
     public void saveToFile() {
         try {
             jsonWriter.open();
@@ -477,10 +455,13 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         }
     }
 
+
+    //EFFECTS: Used when application is exited to print the event log onto console
     public static void onExit() {
         LogPrinter l;
         l = new ScreenPrinter();
         l.consolePrint(EventLog.getInstance());
+
     }
 
 
@@ -495,6 +476,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent ev) {
                 onExit();
+
             }
         });
 
@@ -534,17 +516,18 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         if (n == 0) {
             try {
                 expenseList = jsonReader.read();
+                expenseList.load();
+                EventLog.getInstance().clear();
+                expenseList.logExpenses();
 
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null,
                         "Error loading file...", "Error! ", JOptionPane.ERROR_MESSAGE);
             }
+        } else {
+            EventLog.getInstance().clear();
         }
     }
-
-
-
-
 
 
     // MODIFIES: this

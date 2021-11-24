@@ -5,8 +5,11 @@ import java.util.Date;
 
 
 /**
- * Represents an alarm system event.
+ * Code for this class based off of the Alarm System project:
+ * https://github.students.cs.ubc.ca/CPSC210/AlarmSystem
  */
+
+ //Represents an Expense Tracker event.
 public class Event {
     private static final int HASH_CONSTANT = 13;
     private Date dateLogged;
@@ -23,16 +26,16 @@ public class Event {
     }
 	
 	/**
-	 * Gets the date of this event (includes time).
-	 * @return  the date of the event
+	 * EFFECTS: Gets the date of this event (includes time).
+	 *  and returns the date of the event
 	 */
     public Date getDate() {
         return dateLogged;
     }
 	
 	/**
-	 * Gets the description of this event.
-	 * @return  the description of the event
+     * EFFECTS: Gets the description of this event.
+	 * and returns the description of the event
 	 */
     public String getDescription() {
         return description;

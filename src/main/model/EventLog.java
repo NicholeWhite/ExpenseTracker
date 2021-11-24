@@ -5,7 +5,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Represents a log of alarm system events.
+ * Code in this class is retrieved from:
+ * https://github.students.cs.ubc.ca/CPSC210/AlarmSystem
+ *
+ * Represents a log of Expense Tracker events.
  * We use the Singleton Design Pattern to ensure that there is only
  * one EventLog in the system and that the system has global access
  * to the single instance of the EventLog.
@@ -24,10 +27,10 @@ public class EventLog implements Iterable<Event> {
     }
 	
 	/**
-	 * Gets instance of EventLog - creates it
-	 * if it doesn't already exist.
-	 * (Singleton Design Pattern)
-	 * @return  instance of EventLog
+     * MODIFIES: this
+	 * EFFECTS:Gets instance of EventLog - creates it if it doesn't already exist.
+	 * and returns an instance of EventLog
+     * (Singleton Design Pattern).
 	 */
     public static EventLog getInstance() {
         if (theLog == null) {
@@ -38,15 +41,17 @@ public class EventLog implements Iterable<Event> {
     }
 	
 	/**
-	 * Adds an event to the event log.
+     * MODIFIES: this
+	 * EFFECTS: Adds an event to the event log.
 	 * @param e the event to be added
 	 */
     public void logEvent(Event e) {
         events.add(e);
     }
-	
+
 	/**
-	 * Clears the event log and logs the event.
+     * MODIFIES: this
+	 * EFFECTS: Clears the event log and logs the event.
 	 */
     public void clear() {
         events.clear();
