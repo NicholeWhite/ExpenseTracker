@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class JsonTest {
     protected void checkExpense(String description, Float amount, Expense expense){
-        assertEquals(description, expense.getDescription());
+        assertEquals(description, expense.getType());
         assertEquals(amount, expense.getAmount());
     }
 

@@ -1,5 +1,7 @@
 package ui;
 
+import exception.LogException;
+import model.EventLog;
 import model.Expense;
 import model.MonthlyTracker;
 import persistence.JsonReader;
@@ -7,7 +9,9 @@ import persistence.JsonWriter;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 import javax.swing.*;
@@ -38,6 +42,8 @@ import javax.swing.*;
  *
  *   The timer component is referenced from:
  *   https://stackoverflow.com/questions/1006611/java-swing-timer
+ *
+ *   Button Panel can be attributed to:
  */
 
 // Class represents the main interactive UI for this project, allows user add, clear, save and load expense.
@@ -56,12 +62,22 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
 
+    private JComboBox<String> printCombo;
+    private static final String FILE_DESCRIPTOR = "...file";
+    private JDesktopPane desktop;
+    private static final String SCREEN_DESCRIPTOR = "...screen";
+    LogPrinter lp;
+
     //EFFECTS: Class constructor that calls the initializer and sets the dimensions for the panel
     // adds the fields to the panel
     public MonthlyExpenseUI() {
         super(new GridLayout(1, 0));
 
         init();
+
+
+
+        //desktop.addMouseListener(new DesktopFocusAction());
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
@@ -89,26 +105,40 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     protected JComponent createButtons() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(2,2));
+
+
+
         JButton button = new JButton("Add Expense");
         button.addActionListener(this);
         button.setActionCommand("add");
-        panel.add(button);
+        buttonPanel.add(button);
 
         button = new JButton("Clear All");
         button.addActionListener(this);
         button.setActionCommand("clear");
-        panel.add(button);
+        buttonPanel.add(button);
 
         button = new JButton("Save Work");
         button.addActionListener(this);
         button.setActionCommand("save");
-        panel.add(button);
+        buttonPanel.add(button);
+
+        button = new JButton("Print Log");
+        button.addActionListener(this);
+        button.setActionCommand("print");
+        buttonPanel.add(button);
+        panel.add(buttonPanel);
+
+
 
         //Match the SpringLayout's gap, subtracting 5 to make
         //up for the default gap FlowLayout provides.
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, GAP - 5,  GAP - 5));
         return panel;
     }
+
 
     /**
      * MODIFIES: this, TableUI
@@ -122,11 +152,16 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
             expenseField.setText("");
             descriptionField.setText("");
-            expenseList = new MonthlyTracker();
+            expenseList.clearAll();
             TableUI.makeTableGUI(expenseList);
+
+
 
         } else if ("save".equals(e.getActionCommand())) {
             saveToFile();
+        } else if ("print".equals(e.getActionCommand())) {
+            createPrintCombo();
+            doAction();
         } else {
             if (checkValid(expenseField, descriptionField) != true) {
                 return;
@@ -141,6 +176,30 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         }
 
         updateDisplays();
+       //doAction(e);
+    }
+
+    //Effects
+    public void doAction() {
+
+        try {
+            lp = new ScreenPrinter();
+            lp.printLog(EventLog.getInstance());
+        } catch (LogException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "System Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Helper to create print options combo box
+     * @return  the combo box
+     */
+    private JComboBox<String> createPrintCombo() {
+        printCombo = new JComboBox<String>();
+        printCombo.addItem(FILE_DESCRIPTOR);
+        printCombo.addItem(SCREEN_DESCRIPTOR);
+        return printCombo;
     }
 
 
@@ -155,7 +214,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
 
         } catch (FileNotFoundException exception) {
             JOptionPane.showMessageDialog(null,
-                    "Uh oh! Unable to write to file...", "Error! ", JOptionPane.ERROR_MESSAGE);
+                    "Unable to write to file...", "Error! ", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -418,6 +477,12 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         }
     }
 
+    public static void onExit() {
+        LogPrinter l;
+        l = new ScreenPrinter();
+        l.consolePrint(EventLog.getInstance());
+    }
+
 
     // EFFECTS: Create the GUI and sets it to be visible.
     // Loads image and sets it to be the app icon
@@ -427,6 +492,11 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         JFrame frame = new JFrame("Expense Tracker");
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent ev) {
+                onExit();
+            }
+        });
 
         //Resizes icon image
         ImageIcon img = new ImageIcon("data/coin.png");
@@ -471,6 +541,10 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
             }
         }
     }
+
+
+
+
 
 
     // MODIFIES: this

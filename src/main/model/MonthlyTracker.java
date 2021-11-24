@@ -32,6 +32,7 @@ public class MonthlyTracker implements Writable {
     public void addExpense(Expense e) {
         this.monthlyExpenses.add(e);
         size++;
+        EventLog.getInstance().logEvent(new Event("Expense Added: " + e.getAmount() + ", " + e.getType()));
     }
 
     // MODIFIES: this
@@ -39,12 +40,23 @@ public class MonthlyTracker implements Writable {
     //          nothing if exact expense is not found in list
     public void removeExpense(Expense e) {
         for (Expense ex: monthlyExpenses) {
-            if (ex.getAmount() == e.getAmount() && ex.getDescription().equals(e.getDescription())) {
+            if (ex.getAmount() == e.getAmount() && ex.getType().equals(e.getType())) {
                 this.monthlyExpenses.remove(ex);
                 size--;
+                EventLog.getInstance().logEvent(new Event("Expense Removed: " + e.getAmount() + ", " + e.getType()));
                 break;
             }
         }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: Clears all expenses
+    public void clearAll() {
+        this.monthlyExpenses = new ArrayList<>();
+        this.size = 0;
+        this.month = month;
+        EventLog.getInstance().logEvent(new Event("Cleared All Expenses."));
+
     }
 
 
@@ -55,6 +67,8 @@ public class MonthlyTracker implements Writable {
         for (Expense e: monthlyExpenses) {
             expenseSum += e.getAmount();
         }
+        EventLog.getInstance().logEvent(new Event("Summed Expenses: " + expenseSum));
+
         return expenseSum;
     }
 
@@ -66,6 +80,8 @@ public class MonthlyTracker implements Writable {
         for (Expense e: monthlyExpenses) {
             monthlyExpenseList.add(String.valueOf(e.showExpense()));
         }
+
+        EventLog.getInstance().logEvent(new Event("Listed Expenses: " + monthlyExpenseList));
         return monthlyExpenseList;
     }
 
@@ -94,6 +110,7 @@ public class MonthlyTracker implements Writable {
 
     public void setMonth(String month) {
         this.month = month;
+        EventLog.getInstance().logEvent(new Event("Month Set: " + month));
     }
 
     @Override

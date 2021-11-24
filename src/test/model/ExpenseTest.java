@@ -24,7 +24,7 @@ public class ExpenseTest {
 
     @Test
     void testGetDescription() {
-        assertEquals("hydro", testExpense.getDescription());
+        assertEquals("hydro", testExpense.getType());
 
     }
 

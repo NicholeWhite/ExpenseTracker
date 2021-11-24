@@ -33,7 +33,7 @@ public class Expense implements Writable {
         return this.expense;
     }
 
-    public String getDescription() {
+    public String getType() {
         return this.entryDescription;
     }
 

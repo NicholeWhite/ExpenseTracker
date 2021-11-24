@@ -85,7 +85,7 @@ public class TableUI extends JPanel {
 
         for (Expense e : expenses) {
             data[row][0] = String.valueOf(e.getAmount());
-            data[row][1] = e.getDescription();
+            data[row][1] = e.getType();
             row++;
 
         }
