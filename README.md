@@ -29,23 +29,27 @@ will help me and (hopefully) other people to visualize and track their finances.
 - As a user, I would like to specify the month the monthly tracker relates to
 
 ## Phase 4: Task 2
+In addition to the user having access at any point to print the log, the log will be 
+printed to the console when the session is terminated. Here is an example of the output 
+below:
+
 Tue Nov 23 17:00:01 PST 2021
-Expense Added: 1000.0, rent
+Expense Added To List: 1000.0, rent
 
 Tue Nov 23 17:00:01 PST 2021
 Month Set: January
 
 Tue Nov 23 17:00:11 PST 2021
-Expense Added: 150.0, hydro
+Expense Added To List: 150.0, hydro
 
 Tue Nov 23 17:00:11 PST 2021
 Month Set: January
 
 Tue Nov 23 17:00:25 PST 2021
-Expense Added: 100.0, gas
+Expense Added To List: 100.0, gas
 
 Tue Nov 23 17:00:25 PST 2021
 Month Set: January
 
 Tue Nov 23 17:00:28 PST 2021
-Cleared All Expenses.
+Cleared All Expenses From List.

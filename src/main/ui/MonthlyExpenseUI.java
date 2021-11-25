@@ -61,6 +61,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
     Font italicFont;
     JLabel messageDisplay;
     static final int GAP = 10;
+
     private MonthlyTracker expenseList;
     private Scanner input;
     private JsonWriter jsonWriter;

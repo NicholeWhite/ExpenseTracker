@@ -36,7 +36,7 @@ public class MonthlyTracker implements Writable {
     public void addExpense(Expense e) {
         this.monthlyExpenses.add(e);
         size++;
-        EventLog.getInstance().logEvent(new Event("Expense Added: " + e.getAmount() + ", " + e.getType()));
+        EventLog.getInstance().logEvent(new Event("Expense Added To List: " + e.getAmount() + ", " + e.getType()));
 
     }
 
@@ -67,7 +67,7 @@ public class MonthlyTracker implements Writable {
         this.monthlyExpenses = new ArrayList<>();
         this.size = 0;
         this.month = month;
-        EventLog.getInstance().logEvent(new Event("Cleared All Expenses."));
+        EventLog.getInstance().logEvent(new Event("Cleared All Expenses From List."));
 
     }
 
