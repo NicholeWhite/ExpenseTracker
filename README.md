@@ -53,3 +53,16 @@ Month Set: January
 
 Tue Nov 23 17:00:28 PST 2021
 Cleared All Expenses From List.
+
+## Phase 4: Task 3
+If I had more time to work on this project, I would like to include more classes to 
+reorganize the messy MonthlyTrackerUI class. The UML diagram looks simple, but what 
+lies in the code does not have much organization. Therefore, I would likely do 
+the following:
+- Make use of abstractions where needed
+- Create additional classes to clean up and organize the MonthlyTrackerUI class
+- Remove repetition in some areas of code
+- Create more exceptions to prevent any user errors
+
+
+
