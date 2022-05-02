@@ -402,7 +402,7 @@ public class MonthlyExpenseUI extends JPanel implements ActionListener, FocusLis
         return panel;
     }
 
-    //MODIFIES: this
+    //MODIFIES: this, panel, labels
     //EFFECTS: adds labels to the panel and adds listeners to each field
     //Associate label/field pairs, add everything, and lay it out.
     private void panelLayout(JPanel panel, String[] labelStrings, JLabel[] labels, JComponent[] fields) {
